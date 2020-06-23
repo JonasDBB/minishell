@@ -6,14 +6,14 @@
 /*   By: jbennink <marvin@codam.nl>                   +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/10/28 13:30:20 by jbennink      #+#    #+#                 */
-/*   Updated: 2020/06/03 14:13:48 by jbennink      ########   odam.nl         */
+/*   Updated: 2020/06/23 11:43:03 by jbennink      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stddef.h>
 #include "libft.h"
 
-static int	ft_strcmp(const char *needle, const char *haystack)
+static int	ft_needlecmp(const char *needle, const char *haystack)
 {
 	int	i;
 
@@ -42,7 +42,7 @@ char		*ft_strnstr(const char *haystack, const char *needle, size_t len)
 	{
 		if (*haystack == needle[0])
 		{
-			if (ft_strcmp(needle, haystack) == 0)
+			if (ft_needlecmp(needle, haystack) == 0)
 				return (char*)(haystack);
 		}
 		i++;

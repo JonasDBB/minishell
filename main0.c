@@ -6,7 +6,7 @@
 /*   By: jbennink <jbennink@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/22 15:51:23 by jbennink      #+#    #+#                 */
-/*   Updated: 2020/06/23 11:33:36 by jbennink      ########   odam.nl         */
+/*   Updated: 2020/06/23 11:37:30 by jbennink      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	do_everything(char *line)
 {
-	if (!strcmp(line, "exit"))
+	if (!ft_strcmp(line, "exit"))
 		exit(0);
 }
 
