@@ -1,21 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   minishell.h                                        :+:    :+:            */
+/*   echo.c                                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jbennink <jbennink@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2020/06/23 09:54:21 by jbennink      #+#    #+#                 */
-/*   Updated: 2020/06/24 13:19:13 by jbennink      ########   odam.nl         */
+/*   Created: 2020/06/24 11:44:18 by jbennink      #+#    #+#                 */
+/*   Updated: 2020/06/24 13:24:54 by jbennink      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "minishell.h"
 
-# include "libft/libft.h"
-# include <stdlib.h>
+void	ms_echo(char *s)
+{
+	char	newline_flag;
 
-void	ms_echo(char *s);
-
-#endif
+	newline_flag = 1;
+	while (*s == ' ')
+		s++;
+	if (*s == '-' && *(s + 1) == 'n')
+	{
+		newline_flag = 0;
+		s += 2;
+		while (*s == ' ')
+			s++;
+	}
+	write(1, s, ft_strlen(s));
+	if (newline_flag)
+		write(1, "\n", 1);
+}
