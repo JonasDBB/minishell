@@ -6,7 +6,7 @@
 #    By: jbennink <jbennink@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/06/23 11:22:34 by jbennink      #+#    #+#                  #
-#    Updated: 2020/06/24 13:20:41 by jbennink      ########   odam.nl          #
+#    Updated: 2020/06/24 14:45:17 by jbennink      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = Minishell
 
 LIBFT = libft/libft.a
 
-FLAGS = -Wall -Wextra -Werror
+FLAGS = -Wall -Wextra -Werror -g
 
 SRCS = main0.c \
 echo.c

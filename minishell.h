@@ -6,7 +6,7 @@
 /*   By: jbennink <jbennink@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/23 09:54:21 by jbennink      #+#    #+#                 */
-/*   Updated: 2020/06/24 13:19:13 by jbennink      ########   odam.nl         */
+/*   Updated: 2020/06/24 15:05:11 by jbennink      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "libft/libft.h"
 # include <stdlib.h>
+# include <fcntl.h>
 
 void	ms_echo(char *s);
 

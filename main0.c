@@ -6,7 +6,7 @@
 /*   By: jbennink <jbennink@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/22 15:51:23 by jbennink      #+#    #+#                 */
-/*   Updated: 2020/06/24 13:18:25 by jbennink      ########   odam.nl         */
+/*   Updated: 2020/06/24 15:14:27 by jbennink      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ void	do_everything(char *line)
 	char	*command;
 	int		i;
 
+	if (line[0] == 0)
+		return ;
 	i = 0;
 	while (line[i] != ' ' && line[i])
 		i++;
@@ -47,6 +49,8 @@ int		main(void)
 	{
 		write(1, "minishell$ ", 11);
 		get_next_line(1, &line);
+		if (!line)
+			write(1, "gnl error\n", 10);
 		do_everything(line);
 		free(line);
 	}
