@@ -6,7 +6,7 @@
 /*   By: jbennink <jbennink@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/22 15:51:23 by jbennink      #+#    #+#                 */
-/*   Updated: 2020/06/24 15:14:27 by jbennink      ########   odam.nl         */
+/*   Updated: 2020/07/13 11:08:57 by jbennink      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@ void	do_everything(char *line)
 	char	*command;
 	int		i;
 
-	if (line[0] == 0)
-		return ;
 	i = 0;
 	while (line[i] != ' ' && line[i])
 		i++;
@@ -39,18 +37,18 @@ void	do_everything(char *line)
 		write(1, line, ft_strlen(line));
 		write(1, "\n", 1);
 	}
+	free(command);
 }
-
+#include <stdio.h>
 int		main(void)
 {
 	char	*line;
-
+	int	fd = open("text.txt", O_RDONLY); //debug line, change gnl to read from fd and put command in text.txt
 	while (1)
 	{
 		write(1, "minishell$ ", 11);
-		get_next_line(1, &line);
-		if (!line)
-			write(1, "gnl error\n", 10);
+		// get_next_line(1, &line);
+		get_next_line(fd, &line);
 		do_everything(line);
 		free(line);
 	}

@@ -6,7 +6,7 @@
 #    By: jbennink <jbennink@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/06/23 11:22:34 by jbennink      #+#    #+#                  #
-#    Updated: 2020/06/24 14:45:17 by jbennink      ########   odam.nl          #
+#    Updated: 2020/07/08 13:03:22 by jbennink      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ LIBFT = libft/libft.a
 FLAGS = -Wall -Wextra -Werror -g
 
 SRCS = main0.c \
-echo.c
+echo0.c
 
 OBJS = $(SRCS:.c=.o)
 
