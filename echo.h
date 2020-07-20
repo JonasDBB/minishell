@@ -6,7 +6,7 @@
 /*   By: jbennink <jbennink@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/25 14:37:31 by jbennink      #+#    #+#                 */
-/*   Updated: 2020/07/08 13:27:23 by jbennink      ########   odam.nl         */
+/*   Updated: 2020/07/20 13:41:50 by jbennink      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include "minishell.h"
 
-typedef struct 	s_shit {
+typedef struct	s_shit {
 	int		start;
 	int		len;
 	char	literal;

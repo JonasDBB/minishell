@@ -6,7 +6,7 @@
 /*   By: jbennink <jbennink@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/07/08 11:35:43 by jbennink      #+#    #+#                 */
-/*   Updated: 2020/07/13 11:09:21 by jbennink      ########   odam.nl         */
+/*   Updated: 2020/07/20 13:49:40 by jbennink      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,23 +47,18 @@ int		count_elems(char *s)
 			stop = '\'';
 		if (stop != ' ')
 			i++;
-		// start = i;
 		while (s[i] != stop && s[i] && !ft_strchr(quotes, s[i]))
 			i++;
 		if (!s[i] && stop != ' ')
-			{/* ERROR MISSING CLOSING QUOTE	*/}
-		// end = i;
+			return (-1);
 		if (stop != ' ')
 			i++;
 		result++;
-		//create elem
 		if (!s[i])
 			break ;
-		// if (s[i] == ' ')
-		// 	space = true;
 		stop = ' ';
 	}
-	return result;
+	return (result);
 }
 
 int		get_arg_data(char *s, t_shit *arg)
@@ -90,12 +85,11 @@ int		get_arg_data(char *s, t_shit *arg)
 	if (stop != ' ')
 		i++;
 	arg->start += i;
-	arg->len = arg->start;
 	while (s[i] != stop && s[i] && !ft_strchr(quotes, s[i]))
+	{
 		i++;
-	// if (!s[i] && stop != ' ')
-	// 	{/* ERROR MISSING CLOSING QUOTE	*/}
-	arg->len += i;
+		arg->len++;
+	}
 	if (stop != ' ')
 		i++;
 	if (!s[i])
@@ -105,7 +99,6 @@ int		get_arg_data(char *s, t_shit *arg)
 	return (i);
 }
 
-#include <stdio.h>
 void	ms_echo(char *s)
 {
 	int		count;
@@ -115,19 +108,20 @@ void	ms_echo(char *s)
 	char	newline;
 
 	count = count_elems(s);
-	// printf("count = %i\n", count);
+	if (count == -1)
+	{
+		write(1, "Error: missing closing quote on argument\n", 41);
+		return ;
+	}
 	args = malloc(sizeof(t_shit) * count);
 	i = 0;
 	j = 0;
 	while (i < count)
 	{
 		args[i] = new_element();
-		printf("i,j = %i,%i\n", i, j);
 		args[i].start = j;
 		j += get_arg_data(s + j, &args[i]);
-		printf("j = %i, start = %i, len = %i\n", j, args[i].start, args[i].len);
 		args[i].content = ft_substr(s, args[i].start, args[i].len);
-		// printf("content is %s\n", args[i].content);
 		i++;
 	}
 	i = 0;

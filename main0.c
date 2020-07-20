@@ -6,7 +6,7 @@
 /*   By: jbennink <jbennink@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/22 15:51:23 by jbennink      #+#    #+#                 */
-/*   Updated: 2020/07/13 11:08:57 by jbennink      ########   odam.nl         */
+/*   Updated: 2020/07/20 11:56:03 by jbennink      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,12 @@ void	do_everything(char *line)
 int		main(void)
 {
 	char	*line;
-	int	fd = open("text.txt", O_RDONLY); //debug line, change gnl to read from fd and put command in text.txt
+	// int	fd = open("text.txt", O_RDONLY); //debug line, change gnl to read from fd and put command in text.txt
 	while (1)
 	{
 		write(1, "minishell$ ", 11);
-		// get_next_line(1, &line);
-		get_next_line(fd, &line);
+		get_next_line(1, &line);
+		// get_next_line(fd, &line);
 		do_everything(line);
 		free(line);
 	}
