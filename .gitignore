@@ -2,3 +2,5 @@ Minishell
 *.o
 libft/libft.a
 *test*
+.idea/*
+cmake-build-debug/*
