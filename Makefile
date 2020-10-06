@@ -16,18 +16,18 @@ LIBFT = libft/libft.a
 
 FLAGS = -Wall -Wextra -Werror -g
 
-SRCS = main0.c \
-echo0.c
+SRCS = main.c \
+tokenizer.c
 
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
 %.o: %.c
-	gcc $(FLAGS) -c $< -o $@
+	gcc -c $< -o $@
 
 $(NAME): $(LIBFT) $(OBJS)
-	gcc $(FLAGS) -o $(NAME) $(OBJS) $(LIBFT)
+	gcc -o $(NAME) $(OBJS) $(LIBFT)
 
 clean:
 	rm -f $(OBJS)

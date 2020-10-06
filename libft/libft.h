@@ -6,7 +6,7 @@
 /*   By: jbennink <jbennink@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/10/31 15:14:10 by jbennink      #+#    #+#                 */
-/*   Updated: 2020/06/23 11:41:52 by jbennink      ########   odam.nl         */
+/*   Updated: 2020/08/07 15:11:05 by jbennink      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,20 @@
 # include <stddef.h>
 # include "get_next_line.h"
 
+typedef struct	s_garbo
+{
+	int		len;
+	int		len_new;
+	int		len_old;
+	int		count;
+	int		start_of_next;
+	int		it_source;
+	int		it_result;
+	int		it_new;
+	char	*result;
+}				t_garbo;
+
+char			*ft_replace(char *source, char *old, char *new);
 int				ft_atoi(const char *str);
 void			ft_bzero(void *s, size_t n);
 void			*ft_calloc(size_t count, size_t size);

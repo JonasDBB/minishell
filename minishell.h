@@ -20,10 +20,28 @@
 
 enum			e_bool
 {
-	false,
-	true
+	escape = 2,
+	false = 0,
+	true = 1
 };
 
-void	ms_echo(char *s);
+typedef struct	s_tokens {
+	char*	content;
+	char 	literal;
+	char 	end;
+	char 	space_after;
+}				t_tokens;
+
+void	setescape(char *s);
+void	unsetescape(char *s);
+
+
+void	printlist(t_list *tknlist);
+void	leaks_exit(char *error, int exitcode);
+void	ft_free_one(void *token);
+t_list	*tokenizer(char *inputline);
+
+
+void 		malloc_check(void *p);
 
 #endif
