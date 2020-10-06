@@ -20,13 +20,13 @@
 
 enum			e_bool
 {
-	escape = 2,
+	escape = -1,
 	false = 0,
 	true = 1
 };
 
 typedef struct	s_tokens {
-	char*	content;
+	char*	string;
 	char 	literal;
 	char 	end;
 	char 	space_after;
@@ -38,7 +38,7 @@ void	unsetescape(char *s);
 
 void	printlist(t_list *tknlist);
 void	leaks_exit(char *error, int exitcode);
-void	ft_free_one(void *token);
+void	free_one_token(void *token);
 t_list	*tokenizer(char *inputline);
 
 

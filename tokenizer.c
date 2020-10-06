@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
 
 void			setescape(char *s)
 {
@@ -47,13 +46,13 @@ static t_tokens	*new_token(char *content, char end, char space_after)
 
 	ret = malloc(sizeof(t_tokens));
 	malloc_check(ret);
-	ret->content = ft_strdup(content);
-	malloc_check(ret->content);
+	ret->string = ft_strdup(content);
+	malloc_check(ret->string);
 	if (end == '\'')
 		ret->literal = true;
 	else
 		ret->literal = false;
-	if (space_after == ' ')
+	if (ft_isspace(space_after))
 		ret->space_after = true;
 	else
 		ret->space_after = false;
@@ -65,7 +64,7 @@ static int		cmp(char c, char prev, char stop)
 {
 	if (stop == ' ')
 	{
-		if (c == '\'' || c == '\"')
+		if (c == '\'' || c == '\"' || c == '\t')
 		{
 			if (prev != escape)
 				return (1);
@@ -120,40 +119,40 @@ void			find_breaks(t_list **tokenlist)
 	{
 		i = 1;
 		current = (t_tokens*)tmp->content;
-		if (current->end == ' ' && ft_strchr(";|<>", current->content[0]) && current->content[1])
+		if (current->end == ' ' && ft_strchr(";|<>", current->string[0]) && current->string[1])
 		{
-			new = ft_lstnew(new_token((current->content + 1), ' ', ' '));
-			s[0] = current->content[0];
-			free(current->content);
-			current->content = ft_strdup(s);
+			new = ft_lstnew(new_token((current->string + 1), ' ', ' '));
+			s[0] = current->string[0];
+			free(current->string);
+			current->string = ft_strdup(s);
 			current->space_after = false;
-			malloc_check(current->content);
+			malloc_check(current->string);
 			new->next = tmp->next;
 			tmp->next = new;
 			continue ;
 		}
-		buff = malloc(ft_strlen(current->content));
+		buff = malloc(ft_strlen(current->string));
 		malloc_check(buff);
-		while (current->end == ' ' && current->content[i])
+		while (current->end == ' ' && current->string[i])
 		{
-			buff[0] = current->content[0];
-			buff[i] = current->content[i];
-			if (alsocmp(current->content[i], current->content[i - 1]))
+			buff[0] = current->string[0];
+			buff[i] = current->string[i];
+			if (alsocmp(current->string[i], current->string[i - 1]))
 			{
 				buff[i] = 0;
-				buf2 = malloc(ft_strlen(current->content) + i);
+				buf2 = malloc(ft_strlen(current->string) + i);
 				malloc_check(buf2);
 				j = 0;
-				while (current->content[i])
+				while (current->string[i])
 				{
-					buf2[j] = current->content[i];
+					buf2[j] = current->string[i];
 					i++;
 					j++;
 				}
 				buf2[j] = 0;
-				free(current->content);
-				current->content = ft_strdup(buff);
-				malloc_check(current->content);
+				free(current->string);
+				current->string = ft_strdup(buff);
+				malloc_check(current->string);
 				new = ft_lstnew(new_token((buf2), ' ', ' '));
 				free(buf2);
 				current->space_after = false;
@@ -178,6 +177,13 @@ t_list			*tokenizer(char *inputline)
 	int		size;
 	char	space;
 
+	if (!ft_strlen(inputline))
+		return (NULL);
+	i = 0;
+	while (ft_isspace(inputline[i]))
+		i++;
+	if (!inputline[i])
+		return (NULL);
 	i = 0;
 	size = 0;
 	buff = malloc(ft_strlen(inputline + i));
@@ -187,28 +193,21 @@ t_list			*tokenizer(char *inputline)
 	while (inputline[i])
 	{
 		stop = ' ';
-		while (inputline[i] == ' ')
+		while (ft_isspace(inputline[i]))
 			i++;
 		if (!inputline[i])
 			break ;
 		if (ft_strchr("\'\"", inputline[i]))
-		{
-			if (!i)
+			if (!i || inputline[i - 1] != escape)
 			{
 				stop = inputline[i];
 				i++;
 			}
-			else if (inputline[i - 1] != escape)
-			{
-				stop = inputline[i];
-				i++;
-			}
-		}
 		length = len(inputline, stop, i);
 		if (length == -1)
 		{
 			free(buff);
-			ft_lstclear(&tokenlist, ft_free_one);
+			ft_lstclear(&tokenlist, free_one_token);
 			return (NULL);
 		}
 		ft_strlcpy(buff, inputline + i, length + 1);

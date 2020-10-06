@@ -27,50 +27,48 @@ void		leaks_exit(char *error, int exitcode)
 		write(2, error, ft_strlen(error));
 		write(2, "\n\n", 2);
 	}
-//	system("leaks Minishell > leaks.txt");
-//	system("grep \"total leaked bytes\" leaks.txt");
-//	system("rm leaks.txt");
+	system("leaks Minishell > leaks.txt");
+	system("grep \"total leaked bytes\" leaks.txt");
+	system("rm leaks.txt");
 	exit(exitcode);
 }
 
 void 		concat_list(t_list *tokenlist)
 {
 	t_list		*current;
-//	t_list		*tmp;
-	t_tokens	this;
-//	t_tokens 	to_add;
-//	char 		*newstr;
+	t_list		*next_elem;
+	t_tokens	*current_token;
+	t_tokens 	*next_token;
+	char 		*newstr;
 
 	current = tokenlist;
 	while (current)
 	{
-		printf("size is %i\n", ft_lstsize(tokenlist));
-		this = *(t_tokens*)current->content;
-		if (!this.space_after && current->next)
+		// creating current_token from current elem
+		current_token = (t_tokens*)current->content;
+		if (!current_token->space_after && current->next)
 		{
+			// creating next_token from next_elem
+			next_elem = current->next;
+			next_token = (t_tokens*)next_elem->content;
 
+			// copying over data from next to current
+			current_token->space_after = next_token->space_after;
+			newstr = ft_strjoin(current_token->string, next_token->string);
+			malloc_check(newstr);
+			free(current_token->string);
+			current_token->string = ft_strdup(newstr);
+			malloc_check(current_token->string);
+			free(newstr);
 
-//			FAK THIS SHITE
-
-//			to_add = *(t_tokens*)current->next->content;
-//			newstr = ft_strjoin(this.content, to_add.content);
-//			malloc_check(newstr);
-//			free(this.content);
-//			this.content = newstr;
-//			tmp = current->next;
-//			this.space_after = to_add.space_after;
-//			current->next = current->next->next;
-//			free(to_add.content);
-//			free(tmp->content);
-//			free(tmp);
-//			free(newstr);
-
-//			END OF SHITE
+			// setting current->next to skip over next_elem and deleting next_elem
+			current->next = current->next->next;
+			free_one_token(next_elem->content);
+			free(next_elem);
 		}
 		else
 			current = current->next;
 	}
-	printf("size after is %i\n", ft_lstsize(tokenlist));
 }
 
 void 		printlist(t_list *tknlist)
@@ -82,11 +80,11 @@ void 		printlist(t_list *tknlist)
 	printf("         -|"); // to allign output
 	while (tmp)
 	{
-		unsetescape(((t_tokens*)tmp->content)->content);
+		unsetescape(((t_tokens*)tmp->content)->string);
 		printf("\033[0;36m");
 		if (i % 2)
 			printf("\033[0;31m");
-		printf("%s", ((t_tokens*)tmp->content)->content);
+		printf("%s", ((t_tokens*)tmp->content)->string);
 		if (((t_tokens*)tmp->content)->space_after == true)
 			printf(" ");
 		tmp = tmp->next;
@@ -95,9 +93,9 @@ void 		printlist(t_list *tknlist)
 	printf("\033[0m|-\n");
 }
 
-void		ft_free_one(void *token)
+void		free_one_token(void *token)
 {
-	free(((t_tokens*)token)->content);
+	free(((t_tokens*)token)->string);
 	free(token);
 }
 
@@ -105,30 +103,37 @@ void		do_everything(char *line)
 {
 	t_list	*tknlist;
 
-	tknlist = tokenizer(line);
-	if (!tknlist)
+	if (!ft_strlen(line))
 		return ;
-	// do expansions
-//	concat_list(tknlist);
+	tknlist = tokenizer(line);
+	if (!tknlist
+	)
+		return ;
+//	do expansions
+	concat_list(tknlist);
 	printlist(tknlist);
-	if (!ft_strcmp("exit", ((t_tokens*)tknlist->content)->content))
+	if (!ft_strcmp("exit", ((t_tokens*)tknlist->content)->string))
 		leaks_exit("", 0);
-	ft_lstclear(&tknlist, ft_free_one);
+	ft_lstclear(&tknlist, free_one_token);
 }
 
 int			main(int ac, char **av, char **envp)
 {
 	char	*line;
+	int 	gnl;
+
 	if (ac > 1)
 		leaks_exit("Running with arguments is not supported.", 1);
 	(void)av;
 	(void)envp;
-	while (1)
+	gnl = 1;
+	while (gnl)
 	{
 		write(1, "minishell$ ", 11);
-		get_next_line(0, &line);
+		gnl = get_next_line(0, &line);
 		do_everything(line);
 		free(line);
 	}
-//	return (0);
+	write (1, "exit\n", 5);
+	return (0);
 }
