@@ -90,6 +90,7 @@ static int		len(char *str, char stop, int it)
 {
 	int	i;
 	i = it;
+
 	if (i <= 0)
 		i = 1;
 	while (!cmp(str[i], str[i - 1], stop) && str[i])
@@ -121,7 +122,7 @@ void			find_breaks(t_list **tokenlist)
 		current = (t_tokens*)tmp->content;
 		if (current->end == ' ' && ft_strchr(";|<>", current->string[0]) && current->string[1])
 		{
-			new = ft_lstnew(new_token((current->string + 1), ' ', ' '));
+			new = ft_lstnew(new_token((current->string + 1), ' ', 'a'));
 			s[0] = current->string[0];
 			free(current->string);
 			current->string = ft_strdup(s);

@@ -18,7 +18,14 @@
 # include <stdlib.h>
 # include <fcntl.h>
 
-enum			e_bool
+typedef struct	s_shellvars {
+	char	**envvars;
+	int 	loopstatus;
+	int 	exitstatus;
+	char 	*name;
+}				t_shellvars;
+
+enum			e_num
 {
 	escape = -1,
 	false = 0,
@@ -26,7 +33,7 @@ enum			e_bool
 };
 
 typedef struct	s_tokens {
-	char*	string;
+	char	*string;
 	char 	literal;
 	char 	end;
 	char 	space_after;
@@ -36,7 +43,7 @@ void	setescape(char *s);
 void	unsetescape(char *s);
 
 
-void	printlist(t_list *tknlist);
+void	print_token_list(t_list *tknlist);
 void	leaks_exit(char *error, int exitcode);
 void	free_one_token(void *token);
 t_list	*tokenizer(char *inputline);
