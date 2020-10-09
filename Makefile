@@ -17,7 +17,11 @@ LIBFT = libft/libft.a
 FLAGS = -Wall -Wextra -Werror -g
 
 SRCS = main.c \
-tokenizer.c
+tokenizer.c \
+token_aux.c \
+env_vars.c \
+err_and_exit.c \
+
 
 OBJS = $(SRCS:.c=.o)
 

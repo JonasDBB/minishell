@@ -107,10 +107,12 @@ void		expand_env_var(t_list *tokenlist)
 		if (!current->literal && ft_strchr(current->string, '$'))
 		{
 			start_loc = find_loc(current->string, '$');
-			if (current->string[start_loc - 2] == escape)
+			if (start_loc > 1)
 			{
-				tmp = tmp->next;
-				continue;
+				if (current->string[start_loc - 2] == escape) {
+					tmp = tmp->next;
+					continue;
+				}
 			}
 			identifier = get_old_str(current->string, start_loc);
 			malloc_check(identifier);

@@ -16,7 +16,9 @@
 # include "libft/libft.h"
 # include "echo.h"
 # include <stdlib.h>
+//# include <unistd.h>
 # include <fcntl.h>
+# include <stdbool.h>
 
 typedef struct	s_shellvars {
 	char	**envvars;
@@ -27,11 +29,9 @@ typedef struct	s_shellvars {
 
 t_shellvars	g_shellvars;
 
-enum			e_num
+enum			e_state
 {
-	escape = -1,
-	false = 0,
-	true = 1
+	escape = -1
 };
 
 typedef struct	s_tokens {
@@ -42,6 +42,7 @@ typedef struct	s_tokens {
 }				t_tokens;
 
 void	print_token_list(t_list *tknlist);
+bool	syntax_check(t_list *tokenlist);
 
 t_list	*tokenizer(char *inputline);
 
@@ -62,8 +63,9 @@ void	leaks_exit(char *error, int exitcode);
 /*
 ** token_aux.c
 */
+void	merge_tokens(t_list *current, t_list *next_elem);
+void	create_append(t_list *tokenlist);
 void	setescape(char *s);
 void	unsetescape(char *s);
-
 
 #endif

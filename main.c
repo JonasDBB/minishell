@@ -13,13 +13,13 @@
 #include "minishell.h"
 #include <stdio.h>
 
+
 void	concat_list(t_list *tokenlist)
 {
 	t_list		*current;
 	t_list		*next_elem;
 	t_tokens	*current_token;
 	t_tokens	*next_token;
-	char		*newstr;
 
 	current = tokenlist;
 	while (current)
@@ -38,20 +38,7 @@ void	concat_list(t_list *tokenlist)
 				current = current->next;
 				continue ;
 			}
-
-			// copying over data from next to current
-			current_token->space_after = next_token->space_after;
-			newstr = ft_strjoin(current_token->string, next_token->string);
-			malloc_check(newstr);
-			free(current_token->string);
-			current_token->string = ft_strdup(newstr);
-			malloc_check(current_token->string);
-			free(newstr);
-
-			// setting current->next to skip over next_elem and deleting next_elem
-			current->next = current->next->next;
-			free_one_token(next_elem->content);
-			free(next_elem);
+			merge_tokens(current, next_elem);
 		}
 		else
 			current = current->next;
@@ -92,9 +79,14 @@ void	do_everything(char *line)
 		return ;
 	expand_env_var(tokenlist);
 	concat_list(tokenlist);
-	print_token_list(tokenlist);
-	if (!ft_strcmp("exit", ((t_tokens*)tokenlist->content)->string))
-		leaks_exit("", 0);
+	create_append(tokenlist);
+
+	if (syntax_check(tokenlist))
+	{
+		print_token_list(tokenlist);
+		if (!ft_strcmp("exit", ((t_tokens *) tokenlist->content)->string))
+			leaks_exit("", 0);
+	}
 	ft_lstclear(&tokenlist, free_one_token);
 }
 
