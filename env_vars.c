@@ -95,7 +95,7 @@ void		expand_env_var(t_list *tokenlist)
 {
 	t_list		*tmp;
 	t_tokens	*current;
-	int			loc;
+	int			start_loc;
 	char		*identifier;
 	char		*old;
 	char		*new;
@@ -106,8 +106,13 @@ void		expand_env_var(t_list *tokenlist)
 		current = (t_tokens*)tmp->content;
 		if (!current->literal && ft_strchr(current->string, '$'))
 		{
-			loc = find_loc(current->string, '$');
-			identifier = get_old_str(current->string, loc);
+			start_loc = find_loc(current->string, '$');
+			if (current->string[start_loc - 2] == escape)
+			{
+				tmp = tmp->next;
+				continue;
+			}
+			identifier = get_old_str(current->string, start_loc);
 			malloc_check(identifier);
 			new = find_env(identifier);
 			old = ft_strjoin("$", identifier);

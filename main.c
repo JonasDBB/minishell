@@ -13,44 +13,13 @@
 #include "minishell.h"
 #include <stdio.h>
 
-void 		malloc_check(void *p)
-{
-	if (!p)
-		leaks_exit("malloc2 fail", 1);
-}
-
-void		leaks_exit(char *error, int exitcode)
-{
-	char 	*tmp;
-	char	*command;
-
-	if (exitcode)
-	{
-		write(2, "error: ",7);
-		write(2, error, ft_strlen(error));
-		write(2, "\n\n", 2);
-	}
-	(void)tmp;(void)command;
-//	tmp = ft_strjoin("leaks \"", g_shellvars.name);
-//	malloc_check(tmp);
-//	command = ft_strjoin(tmp, "\" >leaks.txt");
-//	malloc_check(command);
-//	free(tmp);
-//	system(command);
-//	free(command);
-////	system("cat leaks.txt"); // for full display of leaks; comment out line below to use
-//	system("grep \"total leaked bytes\" leaks.txt"); // for short leaks; comment out line above
-//	system("rm leaks.txt");
-	exit(exitcode);
-}
-
-void		concat_list(t_list *tokenlist)
+void	concat_list(t_list *tokenlist)
 {
 	t_list		*current;
 	t_list		*next_elem;
 	t_tokens	*current_token;
-	t_tokens 	*next_token;
-	char 		*newstr;
+	t_tokens	*next_token;
+	char		*newstr;
 
 	current = tokenlist;
 	while (current)
@@ -89,88 +58,7 @@ void		concat_list(t_list *tokenlist)
 	}
 }
 
-// env list as linked tokens
-//void		expand_envp(t_list *tokenlist, char **envp)
-//{
-//	int i = 0;
-//	(void)tokenlist;
-//	while (envp[i])
-//	{
-//		printf("-|%s|-\n", envp[i]);
-//		i++;
-//	}
-
-//}
-
-//t_env		*envtoken(char *line)
-//{
-//	t_env	*result;
-//	int 	i;
-//	char 	*before;
-//	char 	*after;
-//	int 	equals;
-//
-//	i = 0;
-//	result = malloc(sizeof(t_env));
-//	while (line[i] != '=')
-//		i++;
-//	equals = i;
-//	before = malloc(i + 1);
-//	i = 0;
-//	while (i < equals)
-//	{
-//		before[i] = line[i];
-//		i++;
-//	}
-//	while (line[i])
-//		i++;
-//	after = malloc(i);
-//	i = equals + 1;
-//	while (line[i])
-//	{
-//		after[i - (equals + 1)] = line[i];
-//		i++;
-//	}
-//	result->identifier = before;
-//	result->literal = after;
-//	return (result);
-//}
-
-//t_list		*envlister(char **envp)
-//{
-//	t_list	*envlist;
-//	int 	i;
-//
-//	i = 0;
-//	envlist = NULL;
-//	while (envp[i])
-//	{
-//		ft_lstadd_back(&envlist, ft_lstnew(envtoken(envp[i])));
-//		i++;
-//	}
-//	return (envlist);
-//}
-
-//void 		print_env_list(t_list *envlist)
-//{
-//	t_list	*tmp;
-//	int i = 0;
-//
-//	tmp = envlist;
-//	printf("\n");
-//	while (tmp)
-//	{
-//		printf("\033[0;36m");
-//		if (i % 2)
-//			printf("\033[0;31m");
-//		printf("%s = %s\n", ((t_env*)tmp->content)->identifier, ((t_env*)tmp->content)->literal);
-//		tmp = tmp->next;
-//		i++;
-//	}
-//	printf("\033[0m|-\n");
-//}
-
-void 		print_token_list(t_list *tknlist)
+void	print_token_list(t_list *tknlist)
 {
 	t_list	*tmp;
 	int i = 0;
@@ -192,14 +80,8 @@ void 		print_token_list(t_list *tknlist)
 	printf("\033[0m|-\n");
 }
 
-void		free_one_token(void *token)
-{
-	free(((t_tokens*)token)->string);
-	free(token);
-}
 
-
-void		do_everything(char *line)
+void	do_everything(char *line)
 {
 	t_list	*tokenlist;
 
@@ -216,7 +98,7 @@ void		do_everything(char *line)
 	ft_lstclear(&tokenlist, free_one_token);
 }
 
-int			main(int ac, char **av, char **envp)
+int		main(int ac, char **av, char **envp)
 {
 	char	*line;
 

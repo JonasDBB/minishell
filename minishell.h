@@ -41,15 +41,7 @@ typedef struct	s_tokens {
 	char 	space_after;
 }				t_tokens;
 
-void	setescape(char *s);
-void	unsetescape(char *s);
-
-
 void	print_token_list(t_list *tknlist);
-void	leaks_exit(char *error, int exitcode);
-void	free_one_token(void *token);
-
-void	malloc_check(void *p);
 
 t_list	*tokenizer(char *inputline);
 
@@ -58,6 +50,20 @@ t_list	*tokenizer(char *inputline);
 */
 char	**malloc_vars(char **envp);
 void	expand_env_var(t_list *tokenlist);
+
+/*
+** err_and_exit.c
+*/
+void	malloc_check(void *p);
+
+void	free_one_token(void *token);
+void	leaks_exit(char *error, int exitcode);
+
+/*
+** token_aux.c
+*/
+void	setescape(char *s);
+void	unsetescape(char *s);
 
 
 #endif

@@ -12,34 +12,6 @@
 
 #include "minishell.h"
 
-void			setescape(char *s)
-{
-	int i;
-
-	i = 1;
-	if (s[0] == '\\')
-		s[0] = escape;
-	while (s[i])
-	{
-		if (s[i] == '\\' && s[i - 1] != escape)
-			s[i] = escape;
-		i++;
-	}
-}
-
-void			unsetescape(char *s)
-{
-	int i;
-
-	i = 0;
-	while (s[i])
-	{
-		if (s[i] == escape)
-			s[i] = '\\';
-		i++;
-	}
-}
-
 static t_tokens	*new_token(char *content, char end, char space_after)
 {
 	t_tokens *ret;
@@ -103,7 +75,7 @@ static int		len(char *str, char stop, int it)
 	return (i - it);
 }
 
-void			find_breaks(t_list **tokenlist)
+static void		find_breaks(t_list **tokenlist)
 {
 	t_list		*tmp;
 	t_tokens	*current;
