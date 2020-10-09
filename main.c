@@ -13,8 +13,6 @@
 #include "minishell.h"
 #include <stdio.h>
 
-t_shellvars	g_shellvars;
-
 void 		malloc_check(void *p)
 {
 	if (!p)
@@ -32,16 +30,17 @@ void		leaks_exit(char *error, int exitcode)
 		write(2, error, ft_strlen(error));
 		write(2, "\n\n", 2);
 	}
-	tmp = ft_strjoin("leaks \"", g_shellvars.name);
-	malloc_check(tmp);
-	command = ft_strjoin(tmp, "\" >leaks.txt");
-	malloc_check(command);
-	free(tmp);
-	system(command);
-	free(command);
-//	system("cat leaks.txt"); // for full display of leaks; comment out line below to use
-	system("grep \"total leaked bytes\" leaks.txt"); // for short leaks; comment out line above
-	system("rm leaks.txt");
+	(void)tmp;(void)command;
+//	tmp = ft_strjoin("leaks \"", g_shellvars.name);
+//	malloc_check(tmp);
+//	command = ft_strjoin(tmp, "\" >leaks.txt");
+//	malloc_check(command);
+//	free(tmp);
+//	system(command);
+//	free(command);
+////	system("cat leaks.txt"); // for full display of leaks; comment out line below to use
+//	system("grep \"total leaked bytes\" leaks.txt"); // for short leaks; comment out line above
+//	system("rm leaks.txt");
 	exit(exitcode);
 }
 
@@ -199,54 +198,30 @@ void		free_one_token(void *token)
 	free(token);
 }
 
-char 		**malloc_vars(char **envp)
-{
-	char	**result;
-	int		count;
-
-	count = 0;
-	while (envp[count])
-		count++;
-	result = malloc(sizeof(char*) * count);
-	malloc_check(result);
-	count = 0;
-	while (envp[count])
-	{
-		result[count] = ft_strdup(envp[count]);
-		malloc_check(result[count]);
-		count++;
-	}
-	return (result);
-}
 
 void		do_everything(char *line)
 {
-	t_list	*tknlist;
-//	t_list	*envlist;
+	t_list	*tokenlist;
 
-//	envlist = envlister(envp);
-//	print_env_list(envlist);
 	if (!ft_strlen(line))
 		return ;
-	tknlist = tokenizer(line);
-	if (!tknlist)
+	tokenlist = tokenizer(line);
+	if (!tokenlist)
 		return ;
-//	do expansions
-//	expand_envp(tknlist, envp);
-	concat_list(tknlist);
-	print_token_list(tknlist);
-	if (!ft_strcmp("exit", ((t_tokens*)tknlist->content)->string))
+	expand_env_var(tokenlist);
+	concat_list(tokenlist);
+	print_token_list(tokenlist);
+	if (!ft_strcmp("exit", ((t_tokens*)tokenlist->content)->string))
 		leaks_exit("", 0);
-	ft_lstclear(&tknlist, free_one_token);
+	ft_lstclear(&tokenlist, free_one_token);
 }
 
 int			main(int ac, char **av, char **envp)
 {
 	char	*line;
 
-	if (ac > 1) {
+	if (ac > 1)
 		leaks_exit("Running with arguments is not supported.", 1);
-	}
 	g_shellvars.envvars = malloc_vars(envp);
 	g_shellvars.exitstatus = 0;
 	g_shellvars.loopstatus = 1;

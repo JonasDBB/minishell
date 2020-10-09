@@ -25,6 +25,8 @@ typedef struct	s_shellvars {
 	char 	*name;
 }				t_shellvars;
 
+t_shellvars	g_shellvars;
+
 enum			e_num
 {
 	escape = -1,
@@ -46,9 +48,16 @@ void	unsetescape(char *s);
 void	print_token_list(t_list *tknlist);
 void	leaks_exit(char *error, int exitcode);
 void	free_one_token(void *token);
+
+void	malloc_check(void *p);
+
 t_list	*tokenizer(char *inputline);
 
+/*
+** env_vars.c
+*/
+char	**malloc_vars(char **envp);
+void	expand_env_var(t_list *tokenlist);
 
-void 		malloc_check(void *p);
 
 #endif
