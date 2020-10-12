@@ -90,27 +90,29 @@ void	do_everything(char *line)
 	ft_lstclear(&tokenlist, free_one_token);
 }
 
+void	prompt(void)
+{
+	write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
+	write(1, "$ ", 2);
+}
+
 void	handle_sig(int signal)
 {
-	char	d;
+	char	deltwo[6];
 
-	d = 127;
+	deltwo[0] = '\b';
+	deltwo[1] = '\b';
+	deltwo[2] = 127;
+	deltwo[3] = 127;
+	deltwo[4] = '\b';
+	deltwo[5] = '\b';
 	if (signal == SIGQUIT)
-	{
-		write (1, "\b\b", 2);
-		write(1, &d , 1);
-		write(1, &d , 1);
-		write (1, "\b\b", 2);
-	}
+		write(1, deltwo, 6);
 	if (signal == SIGINT)
 	{
-		write (1, "\b\b", 2);
-		write(1, &d , 1);
-		write(1, &d , 1);
-		write (1, "\b\b", 2);
+		write(1, deltwo, 6);
 		write(1, "\n", 1);
-		write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
-		write(1, "$ ", 2);
+		prompt();
 	}
 }
 
@@ -128,8 +130,7 @@ int		main(int ac, char **av, char **envp)
 	{
 		signal(SIGQUIT, handle_sig);
 		signal(SIGINT, handle_sig);
-		write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
-		write(1, "$ ", 2);
+		prompt();
 		g_shellvars.loopstatus = get_next_line(0, &line);
 		do_everything(line);
 		free(line);

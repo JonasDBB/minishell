@@ -91,6 +91,32 @@ static char	*get_old_str(char *str, int loc)
 	return (res);
 }
 
+void		reset_signs(char *string)
+{
+	int	i;
+
+	i = 0;
+	while (string[i])
+	{
+		if (string[i] == temp_escaped)
+			string[i] = '$';
+		i++;
+	}
+}
+
+void		unset_signs(char *string)
+{
+	int	i;
+
+	i = 1;
+	while (string[i])
+	{
+		if (string[i] == '$' && string[i - 1] == escape)
+			string[i] = temp_escaped;
+	i++;
+	}
+}
+
 void		expand_env_var(t_list *tokenlist)
 {
 	t_list		*tmp;
@@ -104,6 +130,7 @@ void		expand_env_var(t_list *tokenlist)
 	while (tmp)
 	{
 		current = (t_tokens*)tmp->content;
+		unset_signs(current->string);
 		if (!current->literal && ft_strchr(current->string, '$'))
 		{
 			start_loc = find_loc(current->string, '$');
@@ -123,8 +150,12 @@ void		expand_env_var(t_list *tokenlist)
 			current->string = ft_replace(current->string, old, new);
 			free(old);
 			free(new);
+			reset_signs(current->string);
 		}
 		else
+		{
+			reset_signs(current->string);
 			tmp = tmp->next;
+		}
 	}
 }

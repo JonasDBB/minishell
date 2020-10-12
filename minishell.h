@@ -31,7 +31,8 @@ t_shellvars	g_shellvars;
 
 enum			e_state
 {
-	escape = -1
+	escape = -1,
+	temp_escaped = -2
 };
 
 typedef struct	s_tokens {
