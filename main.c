@@ -90,6 +90,30 @@ void	do_everything(char *line)
 	ft_lstclear(&tokenlist, free_one_token);
 }
 
+void	handle_sig(int signal)
+{
+	char	d;
+
+	d = 127;
+	if (signal == SIGQUIT)
+	{
+		write (1, "\b\b", 2);
+		write(1, &d , 1);
+		write(1, &d , 1);
+		write (1, "\b\b", 2);
+	}
+	if (signal == SIGINT)
+	{
+		write (1, "\b\b", 2);
+		write(1, &d , 1);
+		write(1, &d , 1);
+		write (1, "\b\b", 2);
+		write(1, "\n", 1);
+		write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
+		write(1, "$ ", 2);
+	}
+}
+
 int		main(int ac, char **av, char **envp)
 {
 	char	*line;
@@ -102,6 +126,8 @@ int		main(int ac, char **av, char **envp)
 	g_shellvars.name = ft_substr(ft_strrchr(av[0], '/'), 1, ft_strlen(av[0]) - 1);
 	while (g_shellvars.loopstatus)
 	{
+		signal(SIGQUIT, handle_sig);
+		signal(SIGINT, handle_sig);
 		write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
 		write(1, "$ ", 2);
 		g_shellvars.loopstatus = get_next_line(0, &line);
@@ -109,5 +135,5 @@ int		main(int ac, char **av, char **envp)
 		free(line);
 	}
 	write (1, "exit\n", 5);
-	leaks_exit("", g_shellvars.exitstatus);
+	exit(g_shellvars.exitstatus);
 }

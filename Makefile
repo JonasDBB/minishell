@@ -21,7 +21,7 @@ tokenizer.c \
 token_aux.c \
 env_vars.c \
 err_and_exit.c \
-
+syntax.c \
 
 OBJS = $(SRCS:.c=.o)
 
@@ -45,3 +45,6 @@ re: fclean all
 
 $(LIBFT):
 	cd libft && $(MAKE) all
+
+run: all
+	./$(NAME)

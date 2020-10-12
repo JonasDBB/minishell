@@ -16,9 +16,9 @@
 # include "libft/libft.h"
 # include "echo.h"
 # include <stdlib.h>
-//# include <unistd.h>
 # include <fcntl.h>
 # include <stdbool.h>
+# include <signal.h>
 
 typedef struct	s_shellvars {
 	char	**envvars;

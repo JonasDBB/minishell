@@ -18,6 +18,8 @@ static bool	is_splitting(t_tokens *token)
 		return (false);
 	if (!ft_strchr(";|<>", token->string[0]))
 		return (false);
+	if (!token->string[0])
+		return (false);
 	return (true);
 }
 
@@ -30,7 +32,7 @@ static bool	syntax_error(char *token)
 	return (false);
 }
 
-static bool	check_combo(char *first, char *second)
+static bool	check_combo(char const *first, char *second)
 {
 	if (first[0] == ';' && (second[0] == '>' || second[0] == '<'))
 		return (true);

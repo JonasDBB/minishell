@@ -72,20 +72,24 @@ static char		*join_line(char *line, char *buffer)
 	return (ret);
 }
 
+/*
+** this is edited for minishell
+*/
+
 int				get_next_line(int fd, char **line)
 {
 	ssize_t		size;
 	static char	buffer[BUFFER_SIZE + 1];
 	int			ret;
 
-	*line = NULL;
-	ret = 0;
+	init(&*line, &ret);
 	while (ret == 0)
 	{
+		write(1, "  \b\b", 4);
 		if (!*buffer)
 		{
 			size = read(fd, buffer, BUFFER_SIZE);
-			if (size <= 0)
+			if (size <= 0 && !line[0])
 			{
 				buffer[0] = '\0';
 				ret = size;
