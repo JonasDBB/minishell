@@ -14,7 +14,6 @@
 # define MINISHELL_H
 
 # include "libft/libft.h"
-# include "echo.h"
 # include <stdlib.h>
 # include <fcntl.h>
 # include <stdbool.h>
@@ -42,10 +41,17 @@ typedef struct	s_tokens {
 	char 	space_after;
 }				t_tokens;
 
+/*
+** main.c
+*/
 void	print_token_list(t_list *tknlist);
-bool	syntax_check(t_list *tokenlist);
-
 t_list	*tokenizer(char *inputline);
+
+/*
+** commands.c
+*/
+char	**create_commands(t_list *tokenlist);
+void	free_array(char **array);
 
 /*
 ** env_vars.c
@@ -68,5 +74,11 @@ void	merge_tokens(t_list *current, t_list *next_elem);
 void	create_append(t_list *tokenlist);
 void	setescape(char *s);
 void	unsetescape(char *s);
+
+/*
+** syntax.c
+*/
+bool	syntax_check(t_list *tokenlist);
+bool	is_splitting(t_tokens *token);
 
 #endif

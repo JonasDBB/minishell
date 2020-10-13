@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static bool	is_splitting(t_tokens *token)
+bool		is_splitting(t_tokens *token)
 {
 	if (token->end != ' ')
 		return (false);

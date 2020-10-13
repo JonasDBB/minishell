@@ -13,7 +13,6 @@
 #include "minishell.h"
 #include <stdio.h>
 
-
 void	concat_list(t_list *tokenlist)
 {
 	t_list		*current;
@@ -80,13 +79,24 @@ void	do_everything(char *line)
 	expand_env_var(tokenlist);
 	concat_list(tokenlist);
 	create_append(tokenlist);
-
-	if (syntax_check(tokenlist))
+	if (!syntax_check(tokenlist))
 	{
-		print_token_list(tokenlist);
-		if (!ft_strcmp("exit", ((t_tokens *) tokenlist->content)->string))
-			leaks_exit("", 0);
+		ft_lstclear(&tokenlist, free_one_token);
+		return ;
 	}
+	print_token_list(tokenlist);
+
+	char ** commands = create_commands(tokenlist);
+	int i = 0;
+	while (commands[i])
+	{
+		printf("%s\n", commands[i]);
+		i++;
+	}
+
+	if (!ft_strcmp("exit", commands[0]))
+		leaks_exit("", 0);
+	free_array(commands);
 	ft_lstclear(&tokenlist, free_one_token);
 }
 

@@ -91,6 +91,19 @@ static char	*get_old_str(char *str, int loc)
 	return (res);
 }
 
+void		unset_signs(char *string)
+{
+	int	i;
+
+	i = 1;
+	while (string[i])
+	{
+		if (string[i] == '$' && string[i - 1] == escape)
+			string[i] = temp_escaped;
+		i++;
+	}
+}
+
 void		reset_signs(char *string)
 {
 	int	i;
@@ -101,19 +114,6 @@ void		reset_signs(char *string)
 		if (string[i] == temp_escaped)
 			string[i] = '$';
 		i++;
-	}
-}
-
-void		unset_signs(char *string)
-{
-	int	i;
-
-	i = 1;
-	while (string[i])
-	{
-		if (string[i] == '$' && string[i - 1] == escape)
-			string[i] = temp_escaped;
-	i++;
 	}
 }
 
@@ -135,12 +135,11 @@ void		expand_env_var(t_list *tokenlist)
 		{
 			start_loc = find_loc(current->string, '$');
 			if (start_loc > 1)
-			{
-				if (current->string[start_loc - 2] == escape) {
+				if (current->string[start_loc - 2] == escape)
+				{
 					tmp = tmp->next;
 					continue;
 				}
-			}
 			identifier = get_old_str(current->string, start_loc);
 			malloc_check(identifier);
 			new = find_env(identifier);

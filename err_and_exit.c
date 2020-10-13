@@ -26,8 +26,6 @@ void	free_one_token(void *token)
 
 void	leaks_exit(char *error, int exitcode)
 {
-	char	*tmp;
-	char	*command;
 
 	if (exitcode)
 	{
@@ -35,11 +33,9 @@ void	leaks_exit(char *error, int exitcode)
 		write(2, error, ft_strlen(error));
 		write(2, "\n\n", 2);
 	}
-	(void)tmp;
-	(void)command;
-//	tmp = ft_strjoin("leaks \"", g_shellvars.name);
+//	char *tmp = ft_strjoin("leaks \"", g_shellvars.name);
 //	malloc_check(tmp);
-//	command = ft_strjoin(tmp, "\" >leaks.txt");
+//	char *command = ft_strjoin(tmp, "\" >leaks.txt");
 //	malloc_check(command);
 //	free(tmp);
 //	system(command);
