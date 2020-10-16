@@ -24,6 +24,7 @@ typedef struct	s_shellvars {
 	int 			loopstatus;
 	unsigned char 	exitstatus;
 	char	 		*name;
+	char			*exitmessage;
 }				t_shellvars;
 
 t_shellvars	g_shellvars;
@@ -32,19 +33,18 @@ enum			e_state
 {
 	end,
 	escape = -1,
-	temp_escaped = '1'
+	temp_escaped = 48
 };
 
 typedef struct	s_token {
 	char	*string;
-	char 	literal;
+	bool 	literal;
 	char 	end;
-	char 	space_after;
+	bool 	space_after;
 }				t_token;
 
 typedef struct	s_command {
 	char				**tokens;
-	char				*command;
 	char				type;
 }				t_command;
 

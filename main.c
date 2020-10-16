@@ -126,6 +126,7 @@ int		main(int ac, char **av, char **envp)
 	g_shellvars.exitstatus = 0;
 	g_shellvars.loopstatus = 1;
 	g_shellvars.name = ft_substr(ft_strrchr(av[0], '/'), 1, ft_strlen(av[0]) - 1);
+	g_shellvars.exitmessage = ft_strdup("exit\n");
 	while (g_shellvars.loopstatus)
 	{
 		signal(SIGQUIT, handle_sig);
@@ -135,6 +136,6 @@ int		main(int ac, char **av, char **envp)
 		do_everything(line);
 		free(line);
 	}
-	write (1, "exit\n", 5);
+	write (1, g_shellvars.exitmessage, ft_strlen(g_shellvars.exitmessage));
 	exit(g_shellvars.exitstatus);
 }

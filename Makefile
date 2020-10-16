@@ -14,7 +14,7 @@ NAME = Minishell
 
 LIBFT = libft/libft.a
 
-FLAGS = -Wall -Wextra -Werror -g
+FLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
 
 SRCS = main.c \
 tokenizer.c \
@@ -22,6 +22,8 @@ token_aux.c \
 env_vars.c \
 err_and_exit.c \
 syntax.c \
+commands.c \
+builtins.c
 
 OBJS = $(SRCS:.c=.o)
 
