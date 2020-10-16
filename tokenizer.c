@@ -12,11 +12,11 @@
 
 #include "minishell.h"
 
-static t_tokens	*new_token(char *content, char end, char space_after)
+static t_token	*new_token(char *content, char end, char space_after)
 {
-	t_tokens *ret;
+	t_token *ret;
 
-	ret = malloc(sizeof(t_tokens));
+	ret = malloc(sizeof(t_token));
 	malloc_check(ret);
 	ret->string = ft_strdup(content);
 	malloc_check(ret->string);
@@ -78,7 +78,7 @@ static int		len(char *str, char stop, int it)
 static void		find_breaks(t_list **tokenlist)
 {
 	t_list		*tmp;
-	t_tokens	*current;
+	t_token	*current;
 	t_list		*new;
 	char		s[2];
 	char		*buff;
@@ -91,7 +91,7 @@ static void		find_breaks(t_list **tokenlist)
 	while (tmp)
 	{
 		i = 1;
-		current = (t_tokens*)tmp->content;
+		current = (t_token*)tmp->content;
 		if (current->end == ' ' && ft_strchr(";|<>", current->string[0]) && current->string[1])
 		{
 			new = ft_lstnew(new_token((current->string + 1), ' ', 'a'));
@@ -198,6 +198,6 @@ t_list			*tokenizer(char *inputline)
 	}
 	free(buff);
 	find_breaks(&tokenlist);
-	((t_tokens*)ft_lstlast(tokenlist)->content)->space_after = false;
+	((t_token*)ft_lstlast(tokenlist)->content)->space_after = false;
 	return (tokenlist);
 }

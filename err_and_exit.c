@@ -18,9 +18,27 @@ void	malloc_check(void *p)
 		leaks_exit("malloc2 fail", 1);
 }
 
+void	free_array(char **array)
+{
+	int	i;
+
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
+}
+
+void	free_one_command(void *token)
+{
+	free_array(((t_command*)token)->tokens);
+	free(token);
+}
 void	free_one_token(void *token)
 {
-	free(((t_tokens*)token)->string);
+	free(((t_token*)token)->string);
 	free(token);
 }
 

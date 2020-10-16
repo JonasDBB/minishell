@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-bool		is_splitting(t_tokens *token)
+#include <stdio.h>
+bool		is_splitting(t_token *token)
 {
 	if (token->end != ' ')
 		return (false);
@@ -44,22 +44,22 @@ static bool	check_combo(char const *first, char *second)
 bool		syntax_check(t_list *tokenlist)
 {
 	t_list		*tmp;
-	t_tokens	*current;
-	t_tokens	*next;
+	t_token		*current;
+	t_token		*next;
 
 	tmp = ft_lstlast(tokenlist);
-	current = (t_tokens*)tmp->content;
+	current = (t_token*)tmp->content;
 	if (is_splitting(current) && current->string[0] != ';')
 		return (syntax_error("newline"));
 	tmp = tokenlist;
-	current = (t_tokens*)tmp->content;
+	current = (t_token*)tmp->content;
 	if (is_splitting(current) && (current->string[0] == ';'
 			|| (current->string[0] == '|')))
 		return (syntax_error(current->string));
 	while (tmp->next)
 	{
-		current = (t_tokens*)tmp->content;
-		next = (t_tokens*)tmp->next->content;
+		current = (t_token*)tmp->content;
+		next = (t_token*)tmp->next->content;
 		if (is_splitting(current) && is_splitting(next))
 		{
 			if (!check_combo(current->string, next->string))

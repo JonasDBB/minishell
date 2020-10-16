@@ -119,17 +119,17 @@ void		reset_signs(char *string)
 
 void		expand_env_var(t_list *tokenlist)
 {
-	t_list		*tmp;
-	t_tokens	*current;
-	int			start_loc;
-	char		*identifier;
-	char		*old;
-	char		*new;
+	t_list	*tmp;
+	t_token	*current;
+	int		start_loc;
+	char	*identifier;
+	char	*old;
+	char	*new;
 
 	tmp = tokenlist;
 	while (tmp)
 	{
-		current = (t_tokens*)tmp->content;
+		current = (t_token*)tmp->content;
 		unset_signs(current->string);
 		if (!current->literal && ft_strchr(current->string, '$'))
 		{

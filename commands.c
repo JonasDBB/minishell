@@ -12,79 +12,96 @@
 
 #include "minishell.h"
 
-static char	*strjoin_and_free(char *s1, char *s2)
+
+#include <stdio.h>
+void	printcommandlist(t_list *commandlist)
 {
-	char	*result;
-	char	*tmp;
+	t_list *tmp;
+	int i = 0;
+	int c = 0;
 
-	if (s1[0])
-		tmp = ft_strjoin(s1, " ");
-	else
-		tmp = ft_strdup(s1);
-	malloc_check(tmp);
-	result = ft_strjoin(tmp, s2);
-	malloc_check(result);
-	free(s1);
-	free(tmp);
-	return (result);
-}
-
-char	**create_commands(t_list *tokenlist)
-{
-	int		count;
-	t_list	*tmp;
-	char	**result;
-	char	*command;
-	int		i;
-
-	count = 1;
-	tmp = tokenlist;
-	while(tmp)
-	{
-		if (is_splitting((t_tokens*)tmp->content))
-			count += 2;
-		if (is_splitting((t_tokens*)tmp->content) && !tmp->next)
-			count--;
-		tmp = tmp->next;
-	}
-	result = malloc(sizeof(char*) * (count + 1));
-	malloc_check(result);
-	result[count] = NULL;
-	i = 0;
-	tmp = tokenlist;
+	tmp = commandlist;
 	while (tmp)
 	{
-		command = ft_strdup("");
-		malloc_check(command);
-		while (!is_splitting((t_tokens*)tmp->content))
+		printf("\033[0;36m");
+		if (c % 2)
+			printf("\033[0;31m");
+		i = 0;
+		while (((t_command*)tmp->content)->tokens[i])
 		{
-			command = strjoin_and_free(command, ((t_tokens*)tmp->content)->string);
-			if (!tmp->next)
-				break;
-			tmp = tmp->next;
-		}
-		result[i] = command;
-		i++;
-		if (is_splitting((t_tokens*)tmp->content)) {
-			result[i] = ft_strdup(((t_tokens*)tmp->content)->string);
+			printf("\033[0;36m");
+			if (i % 2)
+				printf("\033[0;31m");
+			printf("%s ", ((t_command*)tmp->content)->tokens[i]);
 			i++;
 		}
+		if (((t_command*)tmp->content)->type != end)
+			printf("\ntype is %c\n", ((t_command*)tmp->content)->type);
+		else
+			printf("\ntype is end\n");
 		tmp = tmp->next;
+		c++;
 	}
-	if (i < count)
-		result[i] = NULL;
-	return (result);
+	printf("\033[0m\n");
 }
 
-void	free_array(char **array)
+t_command	*new_command(t_list *tokenlist)
 {
-	int	i;
+	t_command	*ret;
+	t_list		*tmp;
+	int			count;
+	int			i;
 
-	i = 0;
-	while (array[i])
+	ret = malloc(sizeof(t_command));
+	malloc_check(ret);
+	tmp = tokenlist;
+	count = 0;
+	while(!is_splitting((t_token*)tmp->content) && tmp->next)
 	{
-		free(array[i]);
-		i++;
+		count++;
+		tmp = tmp->next;
 	}
-	free(array);
+	if (!tmp->next)
+		count++;
+	tmp = tokenlist;
+	ret->tokens = malloc(sizeof(char*) * (count + 1));
+	malloc_check(ret->tokens);
+	i = 0;
+	while(!is_splitting((t_token*)tmp->content) && tmp->next)
+	{
+		ret->tokens[i] = ft_strdup(((t_token*)tmp->content)->string);
+		i++;
+		tmp = tmp->next;
+	}
+	if (!tmp->next)
+	{
+		ret->tokens[i] = ft_strdup(((t_token*)tmp->content)->string);
+		ret->type = end;
+	}
+	else
+		ret->type = ((t_token*)tmp->content)->string[0];
+	ret->tokens[count] = NULL;
+
+	return (ret);
+}
+
+t_list	*commandtokens(t_list *tokenlist)
+{
+	t_list		*tmp;
+	t_list		*new;
+	t_list		*commandlist;
+
+	tmp = tokenlist;
+	commandlist = NULL;
+	while (tmp)
+	{
+		new = ft_lstnew(new_command(tmp));
+		ft_lstadd_back(&commandlist, new);
+		while (!is_splitting((t_token*)tmp->content) && tmp->next)
+			tmp = tmp->next;
+		tmp = tmp->next;
+	}
+	ft_lstclear(&tokenlist, free_one_token);
+//	printcommandlist(commandlist);
+	return (commandlist);
 }

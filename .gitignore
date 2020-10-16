@@ -4,3 +4,4 @@ libft/libft.a
 *test*
 .idea/*
 cmake-build-debug/*
+.DS_Store

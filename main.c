@@ -17,22 +17,19 @@ void	concat_list(t_list *tokenlist)
 {
 	t_list		*current;
 	t_list		*next_elem;
-	t_tokens	*current_token;
-	t_tokens	*next_token;
+	t_token	*current_token;
+	t_token	*next_token;
 
 	current = tokenlist;
 	while (current)
 	{
-		// creating current_token from current elem
-		current_token = (t_tokens*)current->content;
+		current_token = (t_token*)current->content;
 		if (!current_token->space_after && current->next)
 		{
-			// creating next_token from next_elem
 			next_elem = current->next;
-			next_token = (t_tokens*)next_elem->content;
-
-			// check if either token is a splitting character
-			if (ft_strchr(";|<>", current_token->string[0]) || ft_strchr(";|<>", next_token->string[0]))
+			next_token = (t_token*)next_elem->content;
+			if (ft_strchr(";|<>", current_token->string[0])
+				|| ft_strchr(";|<>", next_token->string[0]))
 			{
 				current = current->next;
 				continue ;
@@ -44,21 +41,21 @@ void	concat_list(t_list *tokenlist)
 	}
 }
 
-void	print_token_list(t_list *tknlist)
+void	print_token_list(t_list *tokenlist)
 {
 	t_list	*tmp;
 	int i = 0;
 
-	tmp = tknlist;
+	tmp = tokenlist;
 	printf("         -|"); // to allign output
 	while (tmp)
 	{
-		unsetescape(((t_tokens*)tmp->content)->string);
+		unsetescape(((t_token*)tmp->content)->string);
 		printf("\033[0;36m");
 		if (i % 2)
 			printf("\033[0;31m");
-		printf("%s", ((t_tokens*)tmp->content)->string);
-		if (((t_tokens*)tmp->content)->space_after == true)
+		printf("%s", ((t_token*)tmp->content)->string);
+		if (((t_token*)tmp->content)->space_after == true)
 			printf(" ");
 		tmp = tmp->next;
 		i++;
@@ -66,10 +63,10 @@ void	print_token_list(t_list *tknlist)
 	printf("\033[0m|-\n");
 }
 
-
 void	do_everything(char *line)
 {
 	t_list	*tokenlist;
+	t_list	*commands;
 
 	if (!ft_strlen(line))
 		return ;
@@ -84,20 +81,13 @@ void	do_everything(char *line)
 		ft_lstclear(&tokenlist, free_one_token);
 		return ;
 	}
-	print_token_list(tokenlist);
+//	print_token_list(tokenlist);
 
-	char ** commands = create_commands(tokenlist);
-	int i = 0;
-	while (commands[i])
-	{
-		printf("%s\n", commands[i]);
-		i++;
-	}
-
-	if (!ft_strcmp("exit", commands[0]))
-		leaks_exit("", 0);
-	free_array(commands);
-	ft_lstclear(&tokenlist, free_one_token);
+	commands = commandtokens(tokenlist);
+	do_commands(commands);
+//	if (!ft_strcmp(((t_command*)commands->content)->tokens[0], "exit"))
+//		leaks_exit("", 0);
+	ft_lstclear(&commands, free_one_command);
 }
 
 void	prompt(void)

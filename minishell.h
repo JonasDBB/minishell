@@ -20,38 +20,50 @@
 # include <signal.h>
 
 typedef struct	s_shellvars {
-	char	**envvars;
-	int 	loopstatus;
-	int 	exitstatus;
-	char 	*name;
+	char			**envvars;
+	int 			loopstatus;
+	unsigned char 	exitstatus;
+	char	 		*name;
 }				t_shellvars;
 
 t_shellvars	g_shellvars;
 
 enum			e_state
 {
+	end,
 	escape = -1,
-	temp_escaped = -2
+	temp_escaped = '1'
 };
 
-typedef struct	s_tokens {
+typedef struct	s_token {
 	char	*string;
 	char 	literal;
 	char 	end;
 	char 	space_after;
-}				t_tokens;
+}				t_token;
+
+typedef struct	s_command {
+	char				**tokens;
+	char				*command;
+	char				type;
+}				t_command;
 
 /*
 ** main.c
 */
-void	print_token_list(t_list *tknlist);
+void	print_token_list(t_list *tokenlist);
 t_list	*tokenizer(char *inputline);
+
+
+/*
+** builtins.c
+*/
+void	do_commands(t_list *commandlist);
 
 /*
 ** commands.c
 */
-char	**create_commands(t_list *tokenlist);
-void	free_array(char **array);
+t_list	*commandtokens(t_list *tokenlist);
 
 /*
 ** env_vars.c
@@ -63,7 +75,8 @@ void	expand_env_var(t_list *tokenlist);
 ** err_and_exit.c
 */
 void	malloc_check(void *p);
-
+void	free_array(char **array);
+void	free_one_command(void *token);
 void	free_one_token(void *token);
 void	leaks_exit(char *error, int exitcode);
 
@@ -79,6 +92,6 @@ void	unsetescape(char *s);
 ** syntax.c
 */
 bool	syntax_check(t_list *tokenlist);
-bool	is_splitting(t_tokens *token);
+bool	is_splitting(t_token *token);
 
 #endif
