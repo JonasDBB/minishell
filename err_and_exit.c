@@ -51,15 +51,15 @@ void	leaks_exit(char *error, int exitcode)
 		write(2, error, ft_strlen(error));
 		write(2, "\n\n", 2);
 	}
-//	char *tmp = ft_strjoin("leaks \"", g_shellvars.name);
-//	malloc_check(tmp);
-//	char *command = ft_strjoin(tmp, "\" >leaks.txt");
-//	malloc_check(command);
-//	free(tmp);
-//	system(command);
-//	free(command);
-////	system("cat leaks.txt"); // for full display of leaks; comment out line below to use
-//	system("grep \"total leaked bytes\" leaks.txt"); // for short leaks; comment out line above
-//	system("rm leaks.txt");
+	char *tmp = ft_strjoin("leaks \"", g_shellvars.name);
+	malloc_check(tmp);
+	char *command = ft_strjoin(tmp, "\" >leaks.txt");
+	malloc_check(command);
+	free(tmp);
+	system(command);
+	free(command);
+//	system("cat leaks.txt"); // for full display of leaks; comment out line below to use
+	system("grep \"total leaked bytes\" leaks.txt"); // for short leaks; comment out line above
+	system("rm leaks.txt");
 	exit(exitcode);
 }

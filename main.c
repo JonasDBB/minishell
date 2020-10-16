@@ -110,6 +110,7 @@ void	handle_sig(int signal)
 		write(1, deltwo, 6);
 	if (signal == SIGINT)
 	{
+		g_shellvars.exitstatus = 1;
 		write(1, deltwo, 6);
 		write(1, "\n", 1);
 		prompt();
