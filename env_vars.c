@@ -97,7 +97,7 @@ void		unset_signs(char *string)
 
 	i = 1;
 	if (!string[0])
-		return;
+		return ;
 	while (string[i])
 	{
 		if (string[i] == '$' && string[i - 1] == escape)
@@ -118,7 +118,7 @@ void		reset_signs(char *string)
 		i++;
 	}
 }
-#include <stdio.h>
+
 void		expand_env_var(t_list *tokenlist)
 {
 	t_list	*tmp;

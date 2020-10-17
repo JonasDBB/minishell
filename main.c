@@ -81,12 +81,19 @@ void	do_everything(char *line)
 		ft_lstclear(&tokenlist, free_one_token);
 		return ;
 	}
-//	print_token_list(tokenlist);
-
+	t_list	*tmp = tokenlist;
+	char old[2];
+	old[0] = escape;
+	old[1] = 0;
+	while(tmp)
+	{
+		((t_token*)tmp->content)->string = ft_replace(((t_token*)tmp->content)->string, old, "");
+		malloc_check(((t_token*)tmp->content)->string);
+		tmp = tmp->next;
+	}
 	commands = commandtokens(tokenlist);
 	do_commands(commands);
-//	if (!ft_strcmp(((t_command*)commands->content)->tokens[0], "exit"))
-//		leaks_exit("", 0);
+
 	ft_lstclear(&commands, free_one_command);
 }
 
@@ -120,14 +127,12 @@ void	handle_sig(int signal)
 int		main(int ac, char **av, char **envp)
 {
 	char	*line;
-
 	if (ac > 1)
 		leaks_exit("Running with arguments is not supported.", 1);
 	g_shellvars.envvars = malloc_vars(envp);
 	g_shellvars.exitstatus = 0;
 	g_shellvars.loopstatus = 1;
 	g_shellvars.name = ft_substr(ft_strrchr(av[0], '/'), 1, ft_strlen(av[0]) - 1);
-	g_shellvars.exitmessage = ft_strdup("exit\n");
 	while (g_shellvars.loopstatus)
 	{
 		signal(SIGQUIT, handle_sig);
@@ -137,6 +142,6 @@ int		main(int ac, char **av, char **envp)
 		do_everything(line);
 		free(line);
 	}
-	write (1, g_shellvars.exitmessage, ft_strlen(g_shellvars.exitmessage));
+	write (1, "exit\n", 5);
 	exit(g_shellvars.exitstatus);
 }

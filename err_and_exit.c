@@ -36,6 +36,7 @@ void	free_one_command(void *token)
 	free_array(((t_command*)token)->tokens);
 	free(token);
 }
+
 void	free_one_token(void *token)
 {
 	free(((t_token*)token)->string);

@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
+
 bool		is_splitting(t_token *token)
 {
 	if (token->end != ' ')

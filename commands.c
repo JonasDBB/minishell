@@ -12,8 +12,7 @@
 
 #include "minishell.h"
 
-
-#include <stdio.h>
+/*
 void	printcommandlist(t_list *commandlist)
 {
 	t_list *tmp;
@@ -44,6 +43,7 @@ void	printcommandlist(t_list *commandlist)
 	}
 	printf("\033[0m\n");
 }
+*/
 
 t_command	*new_command(t_list *tokenlist)
 {
@@ -56,7 +56,7 @@ t_command	*new_command(t_list *tokenlist)
 	malloc_check(ret);
 	tmp = tokenlist;
 	count = 0;
-	while(!is_splitting((t_token*)tmp->content) && tmp->next)
+	while (!is_splitting((t_token*)tmp->content) && tmp->next)
 	{
 		count++;
 		tmp = tmp->next;
@@ -67,7 +67,7 @@ t_command	*new_command(t_list *tokenlist)
 	ret->tokens = malloc(sizeof(char*) * (count + 1));
 	malloc_check(ret->tokens);
 	i = 0;
-	while(!is_splitting((t_token*)tmp->content) && tmp->next)
+	while (!is_splitting((t_token*)tmp->content) && tmp->next)
 	{
 		ret->tokens[i] = ft_strdup(((t_token*)tmp->content)->string);
 		i++;
@@ -81,11 +81,10 @@ t_command	*new_command(t_list *tokenlist)
 	else
 		ret->type = ((t_token*)tmp->content)->string[0];
 	ret->tokens[count] = NULL;
-
 	return (ret);
 }
 
-t_list	*commandtokens(t_list *tokenlist)
+t_list		*commandtokens(t_list *tokenlist)
 {
 	t_list		*tmp;
 	t_list		*new;
@@ -102,6 +101,5 @@ t_list	*commandtokens(t_list *tokenlist)
 		tmp = tmp->next;
 	}
 	ft_lstclear(&tokenlist, free_one_token);
-//	printcommandlist(commandlist);
 	return (commandlist);
 }

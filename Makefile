@@ -23,7 +23,10 @@ env_vars.c \
 err_and_exit.c \
 syntax.c \
 commands.c \
-builtins.c
+builtins.c \
+env_and_exit_builtins.c \
+env_aux_functions.c \
+process_commands.c
 
 OBJS = $(SRCS:.c=.o)
 

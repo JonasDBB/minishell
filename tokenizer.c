@@ -61,8 +61,8 @@ static int		alsocmp(char c, char prev)
 static int		len(char *str, char stop, int it)
 {
 	int	i;
-	i = it;
 
+	i = it;
 	if (i <= 0)
 		i = 1;
 	while (!cmp(str[i], str[i - 1], stop) && str[i])
@@ -77,14 +77,14 @@ static int		len(char *str, char stop, int it)
 
 static void		find_breaks(t_list **tokenlist)
 {
-	t_list		*tmp;
+	t_list	*tmp;
 	t_token	*current;
-	t_list		*new;
-	char		s[2];
-	char		*buff;
-	char		*buf2;
-	int			i;
-	int			j;
+	t_list	*new;
+	char	s[2];
+	char	*buff;
+	char	*buf2;
+	int		i;
+	int		j;
 
 	tmp = *tokenlist;
 	s[1] = 0;

@@ -16,7 +16,7 @@ void	merge_tokens(t_list *current, t_list *next_elem)
 {
 	t_token	*current_token;
 	t_token	*next_token;
-	char		*newstr;
+	char	*newstr;
 
 	current_token = (t_token*)current->content;
 	next_token = (t_token*)next_elem->content;
@@ -43,7 +43,8 @@ void	create_append(t_list *tokenlist)
 	{
 		first = ((t_token*)tmp->content)->string[0];
 		second = ((t_token*)tmp->next->content)->string[0];
-		if (first == '>' && second == '>' && !((t_token*)tmp->content)->space_after)
+		if (first == '>' && second == '>'
+			&& !((t_token*)tmp->content)->space_after)
 			merge_tokens(tmp, tmp->next);
 		tmp = tmp->next;
 	}

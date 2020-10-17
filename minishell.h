@@ -24,7 +24,6 @@ typedef struct	s_shellvars {
 	int 			loopstatus;
 	unsigned char 	exitstatus;
 	char	 		*name;
-	char			*exitmessage;
 }				t_shellvars;
 
 t_shellvars	g_shellvars;
@@ -32,8 +31,8 @@ t_shellvars	g_shellvars;
 enum			e_state
 {
 	end,
-	escape = -1,
-	temp_escaped = 48
+	escape = 60,
+	temp_escaped = -2
 };
 
 typedef struct	s_token {
@@ -54,16 +53,40 @@ typedef struct	s_command {
 void	print_token_list(t_list *tokenlist);
 t_list	*tokenizer(char *inputline);
 
-
 /*
 ** builtins.c
 */
+void	builtin_pwd(void);
+void	builtin_echo(char **args);
+void	builtin_cd(char *arg);
+void	builtin_env(char *arg);
+
+/*
+** process_commands.c
+*/
 void	do_commands(t_list *commandlist);
+
+/*
+** env_and_exit_builtins.c
+*/
+int		strisdigit(char *str);
+void	builtin_exit(char **args);
+void	builtin_export(char **args);
+void	builtin_unset(char **args);
 
 /*
 ** commands.c
 */
 t_list	*commandtokens(t_list *tokenlist);
+
+/*
+** env_aux_functions.c
+*/
+bool	env_check(char *arg);
+bool	env_check_unset(char *arg);
+void	print_env_args(void);
+int		strcmp_until_equals(char const *arg, char const *str);
+int		find_env_var(char *arg);
 
 /*
 ** env_vars.c
@@ -93,5 +116,6 @@ void	unsetescape(char *s);
 */
 bool	syntax_check(t_list *tokenlist);
 bool	is_splitting(t_token *token);
+
 
 #endif
