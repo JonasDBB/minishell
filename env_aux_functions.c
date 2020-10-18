@@ -98,7 +98,7 @@ int		strcmp_until_equals(char const *arg, char const *str)
 	return (1);
 }
 
-int		find_env_var(char *arg)
+int		find_env_loc(char *arg)
 {
 	int	i;
 

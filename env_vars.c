@@ -45,7 +45,7 @@ static int	find_loc(char const *string, char c)
 	return (i + 1);
 }
 
-static char	*find_env(char *identifier)
+char		*find_env(char *identifier)
 {
 	int		i;
 	char	*before_eq;
@@ -127,12 +127,15 @@ void		expand_env_var(t_list *tokenlist)
 	char	*identifier;
 	char	*old;
 	char	*new;
+	char	*exit_status;
 
 	tmp = tokenlist;
+	exit_status = ft_itoa((int)g_shellvars.exitstatus);
 	while (tmp)
 	{
 		current = (t_token*)tmp->content;
 		unset_signs(current->string);
+		current->string = ft_replace(current->string, "$?", exit_status);
 		if (!current->literal && ft_strchr(current->string, '$'))
 		{
 			start_loc = find_loc(current->string, '$');
@@ -159,4 +162,5 @@ void		expand_env_var(t_list *tokenlist)
 			tmp = tmp->next;
 		}
 	}
+	free(exit_status);
 }

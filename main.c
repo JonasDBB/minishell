@@ -143,5 +143,6 @@ int		main(int ac, char **av, char **envp)
 		free(line);
 	}
 	write (1, "exit\n", 5);
+//	leaks_exit("", g_shellvars.exitstatus);
 	exit(g_shellvars.exitstatus);
 }

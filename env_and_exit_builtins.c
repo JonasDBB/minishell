@@ -103,7 +103,7 @@ void	builtin_unset(char **args)
 	g_shellvars.exitstatus = 0;
 	while (args[i])
 	{
-		index_to_remove = find_env_var(args[i]);
+		index_to_remove = find_env_loc(args[i]);
 		if (!env_check_unset(args[i]) ||index_to_remove == -1)
 		{
 			i++;

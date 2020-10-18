@@ -48,15 +48,23 @@ void	builtin_echo(char **args)
 	g_shellvars.exitstatus = 0;
 }
 
-void	builtin_cd(char *arg)
+void	builtin_cd(char **args)
 {
-	int	ret;
+	int		ret;
+	char	*home;
 
-	ret = chdir(arg);
+	if (!args[1])
+	{
+		home = find_env("HOME");
+		ret = chdir(home);
+		free(home);
+	}
+	else
+		ret = chdir(args[1]);
 	if (ret == -1)
 	{
 		write(1, "cd: no such file or directory: ", 31);
-		write(1, arg, ft_strlen(arg));
+		write(1, args[1], ft_strlen(args[1]));
 		write(1, "\n", 1);
 		g_shellvars.exitstatus = 1;
 		return ;

@@ -18,6 +18,7 @@
 # include <fcntl.h>
 # include <stdbool.h>
 # include <signal.h>
+# include <sys/stat.h>
 
 typedef struct	s_shellvars {
 	char			**envvars;
@@ -58,7 +59,7 @@ t_list	*tokenizer(char *inputline);
 */
 void	builtin_pwd(void);
 void	builtin_echo(char **args);
-void	builtin_cd(char *arg);
+void	builtin_cd(char **args);
 void	builtin_env(char *arg);
 
 /*
@@ -86,13 +87,14 @@ bool	env_check(char *arg);
 bool	env_check_unset(char *arg);
 void	print_env_args(void);
 int		strcmp_until_equals(char const *arg, char const *str);
-int		find_env_var(char *arg);
+int		find_env_loc(char *arg);
 
 /*
 ** env_vars.c
 */
 char	**malloc_vars(char **envp);
 void	expand_env_var(t_list *tokenlist);
+char	*find_env(char *identifier);
 
 /*
 ** err_and_exit.c
