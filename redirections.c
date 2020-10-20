@@ -52,7 +52,7 @@ static void	remove_args(char **args, int i)
 		args[i] = args[i + 2];
 		i++;
 	}
-	args [i] = NULL;
+	args[i] = NULL;
 }
 
 bool		find_redirects(char **tokens)

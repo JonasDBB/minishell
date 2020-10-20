@@ -104,7 +104,7 @@ void		builtin_unset(char **args)
 	while (args[i])
 	{
 		index_to_remove = find_env_loc(args[i]);
-		if (!env_check_unset(args[i]) ||index_to_remove == -1)
+		if (!env_check_unset(args[i]) || index_to_remove == -1)
 		{
 			i++;
 			continue;

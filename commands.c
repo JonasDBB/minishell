@@ -12,9 +12,8 @@
 
 #include "minishell.h"
 
-
-#include <stdio.h>
-void	printcommandlist(t_list *commandlist)
+/*#include <stdio.h>
+void		printcommandlist(t_list *commandlist)
 {
 	t_list *tmp;
 	int i = 0;
@@ -44,8 +43,7 @@ void	printcommandlist(t_list *commandlist)
 	}
 	printf("\033[0m\n");
 }
-
-
+*/
 bool		command_splitting(t_token *token)
 {
 	if (token->end != ' ')
@@ -56,26 +54,6 @@ bool		command_splitting(t_token *token)
 		return (false);
 	return (true);
 }
-
-//int			redirection(char **args)
-//{
-//	int		i;
-//
-//	i = 0;
-//	while (args[i])
-//	{
-//		if (ft_strchr("<>", args[i][0]))
-//		{
-//			if (args[i][0] == '>')
-//				return (redirect_trunc);
-//			if (args[i][0] == '<')
-//				return (redirect_input);
-//			return (redirect_append);
-//		}
-//		i++;
-//	}
-//	return (0);
-//}
 
 t_command	*new_command(t_list *tokenlist)
 {
@@ -121,7 +99,6 @@ t_list		*commandtokens(t_list *tokenlist)
 	t_list		*tmp;
 	t_list		*new;
 	t_list		*commandlist;
-
 
 	tmp = tokenlist;
 	commandlist = NULL;

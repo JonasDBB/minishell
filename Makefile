@@ -26,7 +26,9 @@ commands.c \
 builtins.c \
 env_and_exit_builtins.c \
 env_aux_functions.c \
-process_commands.c
+process_commands.c \
+executes.c \
+redirections.c
 
 OBJS = $(SRCS:.c=.o)
 
