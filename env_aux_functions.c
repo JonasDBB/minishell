@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-bool	env_check(char *arg)
+bool		env_check(char *arg)
 {
 	int		i;
 	bool	good;
@@ -38,7 +38,7 @@ bool	env_check(char *arg)
 	return (good);
 }
 
-bool	env_check_unset(char *arg)
+bool		env_check_unset(char *arg)
 {
 	int		i;
 	bool	good;
@@ -64,7 +64,7 @@ bool	env_check_unset(char *arg)
 	return (good);
 }
 
-void	print_env_args(void)
+void		print_env_args(void)
 {
 	int	i;
 
@@ -78,7 +78,7 @@ void	print_env_args(void)
 	}
 }
 
-int		strcmp_until_equals(char const *arg, char const *str)
+static int	strcmp_until_equals(char const *arg, char const *str)
 {
 	int	i;
 
@@ -98,7 +98,7 @@ int		strcmp_until_equals(char const *arg, char const *str)
 	return (1);
 }
 
-int		find_env_loc(char *arg)
+int			find_env_loc(char *arg)
 {
 	int	i;
 

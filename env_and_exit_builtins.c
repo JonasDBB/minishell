@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int		strisdigit(char *str)
+static int	strisdigit(char *str)
 {
 	int	i;
 
@@ -26,7 +26,7 @@ int		strisdigit(char *str)
 	return (1);
 }
 
-void	builtin_exit(char **args)
+void		builtin_exit(char **args)
 {
 	if (args[1])
 	{
@@ -54,7 +54,7 @@ void	builtin_exit(char **args)
 		g_shellvars.loopstatus = 0;
 }
 
-void	builtin_export(char **args)
+void		builtin_export(char **args)
 {
 	int		count;
 	int		i;
@@ -91,7 +91,7 @@ void	builtin_export(char **args)
 	}
 }
 
-void	builtin_unset(char **args)
+void		builtin_unset(char **args)
 {
 	int		i;
 	int		j;

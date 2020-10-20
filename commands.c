@@ -12,7 +12,8 @@
 
 #include "minishell.h"
 
-/*
+
+#include <stdio.h>
 void	printcommandlist(t_list *commandlist)
 {
 	t_list *tmp;
@@ -34,16 +35,47 @@ void	printcommandlist(t_list *commandlist)
 			printf("%s ", ((t_command*)tmp->content)->tokens[i]);
 			i++;
 		}
-		if (((t_command*)tmp->content)->type != end)
-			printf("\ntype is %c\n", ((t_command*)tmp->content)->type);
-		else
+		if (((t_command*)tmp->content)->type == end)
 			printf("\ntype is end\n");
+		else
+			printf("\ntype is %c\n", ((t_command*)tmp->content)->type);
 		tmp = tmp->next;
 		c++;
 	}
 	printf("\033[0m\n");
 }
-*/
+
+
+bool		command_splitting(t_token *token)
+{
+	if (token->end != ' ')
+		return (false);
+	if (!ft_strchr(";|", token->string[0]))
+		return (false);
+	if (!token->string[0])
+		return (false);
+	return (true);
+}
+
+//int			redirection(char **args)
+//{
+//	int		i;
+//
+//	i = 0;
+//	while (args[i])
+//	{
+//		if (ft_strchr("<>", args[i][0]))
+//		{
+//			if (args[i][0] == '>')
+//				return (redirect_trunc);
+//			if (args[i][0] == '<')
+//				return (redirect_input);
+//			return (redirect_append);
+//		}
+//		i++;
+//	}
+//	return (0);
+//}
 
 t_command	*new_command(t_list *tokenlist)
 {
@@ -56,7 +88,7 @@ t_command	*new_command(t_list *tokenlist)
 	malloc_check(ret);
 	tmp = tokenlist;
 	count = 0;
-	while (!is_splitting((t_token*)tmp->content) && tmp->next)
+	while (!command_splitting((t_token*)tmp->content) && tmp->next)
 	{
 		count++;
 		tmp = tmp->next;
@@ -67,7 +99,7 @@ t_command	*new_command(t_list *tokenlist)
 	ret->tokens = malloc(sizeof(char*) * (count + 1));
 	malloc_check(ret->tokens);
 	i = 0;
-	while (!is_splitting((t_token*)tmp->content) && tmp->next)
+	while (!command_splitting((t_token*)tmp->content) && tmp->next)
 	{
 		ret->tokens[i] = ft_strdup(((t_token*)tmp->content)->string);
 		i++;
@@ -90,16 +122,18 @@ t_list		*commandtokens(t_list *tokenlist)
 	t_list		*new;
 	t_list		*commandlist;
 
+
 	tmp = tokenlist;
 	commandlist = NULL;
 	while (tmp)
 	{
 		new = ft_lstnew(new_command(tmp));
 		ft_lstadd_back(&commandlist, new);
-		while (!is_splitting((t_token*)tmp->content) && tmp->next)
+		while (!command_splitting((t_token*)tmp->content) && tmp->next)
 			tmp = tmp->next;
 		tmp = tmp->next;
 	}
+//	printcommandlist(commandlist);
 	ft_lstclear(&tokenlist, free_one_token);
 	return (commandlist);
 }

@@ -59,8 +59,8 @@ void	leaks_exit(char *error, int exitcode)
 	free(tmp);
 	system(command);
 	free(command);
-	system("cat leaks.txt"); // for full display of leaks; comment out line below to use
-//	system("grep \"total leaked bytes\" leaks.txt"); // for short leaks; comment out line above
+//	system("cat leaks.txt"); // for full display of leaks; comment out line below to use
+	system("grep \"total leaked bytes\" leaks.txt"); // for short leaks; comment out line above
 	system("rm leaks.txt");
 	exit(exitcode);
 }

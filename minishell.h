@@ -25,6 +25,8 @@ typedef struct	s_shellvars {
 	int 			loopstatus;
 	unsigned char 	exitstatus;
 	char	 		*name;
+	int				og_stdout;
+	int 			og_stdin;
 }				t_shellvars;
 
 t_shellvars	g_shellvars;
@@ -32,7 +34,10 @@ t_shellvars	g_shellvars;
 enum			e_state
 {
 	end,
-	escape = 60,
+	redirect_trunc,
+	redirect_append,
+	redirect_input,
+	escape = -1,
 	temp_escaped = -2
 };
 
@@ -44,9 +49,14 @@ typedef struct	s_token {
 }				t_token;
 
 typedef struct	s_command {
-	char				**tokens;
-	char				type;
+	char	**tokens;
+	char	type;
 }				t_command;
+
+
+
+void		unset_redirects(char *str);
+
 
 /*
 ** main.c
@@ -68,9 +78,18 @@ void	builtin_env(char *arg);
 void	do_commands(t_list *commandlist);
 
 /*
+** process_commands.c
+*/
+bool		find_redirects(char **tokens);
+
+/*
+** executes.c
+*/
+bool		find_executables(char **args);
+
+/*
 ** env_and_exit_builtins.c
 */
-int		strisdigit(char *str);
 void	builtin_exit(char **args);
 void	builtin_export(char **args);
 void	builtin_unset(char **args);
@@ -86,7 +105,6 @@ t_list	*commandtokens(t_list *tokenlist);
 bool	env_check(char *arg);
 bool	env_check_unset(char *arg);
 void	print_env_args(void);
-int		strcmp_until_equals(char const *arg, char const *str);
 int		find_env_loc(char *arg);
 
 /*

@@ -95,6 +95,8 @@ static void		find_breaks(t_list **tokenlist)
 		if (current->end == ' ' && ft_strchr(";|<>", current->string[0]) && current->string[1])
 		{
 			new = ft_lstnew(new_token((current->string + 1), ' ', 'a'));
+			if (current->space_after)
+				((t_token*)new->content)->space_after = true;
 			s[0] = current->string[0];
 			free(current->string);
 			current->string = ft_strdup(s);
@@ -127,6 +129,8 @@ static void		find_breaks(t_list **tokenlist)
 				current->string = ft_strdup(buff);
 				malloc_check(current->string);
 				new = ft_lstnew(new_token((buf2), ' ', ' '));
+				if (!current->space_after)
+					((t_token*)new->content)->space_after = false;
 				free(buf2);
 				current->space_after = false;
 				new->next = tmp->next;

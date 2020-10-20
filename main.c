@@ -41,6 +41,32 @@ void	concat_list(t_list *tokenlist)
 	}
 }
 
+static void		set_redirects(char *str)
+{
+	if (str[0] == '<')
+		str[0] = redirect_input;
+	if (str[0] == '>' && !str[1])
+		str[0] = redirect_trunc;
+	if (str[0] == '>' && str[1] == '>')
+	{
+		str[0] = redirect_append;
+		str[1] = 0;
+	}
+}
+
+void		unset_redirects(char *str)
+{
+	if (str[0] == redirect_input)
+		str[0] = '<';
+	if (str[0] == redirect_trunc)
+		str[0] = '>';
+	if (str[0] == redirect_append)
+	{
+		str[0] = '>';
+		str[1] = '>';
+	}
+}
+
 void	print_token_list(t_list *tokenlist)
 {
 	t_list	*tmp;
@@ -51,6 +77,7 @@ void	print_token_list(t_list *tokenlist)
 	while (tmp)
 	{
 		unsetescape(((t_token*)tmp->content)->string);
+//		unset_redirects(((t_token*)tmp->content)->string);
 		printf("\033[0;36m");
 		if (i % 2)
 			printf("\033[0;31m");
@@ -81,6 +108,15 @@ void	do_everything(char *line)
 		ft_lstclear(&tokenlist, free_one_token);
 		return ;
 	}
+	t_list *tmp1 = tokenlist;
+	while(tmp1)
+	{
+		t_token *current = (t_token*)tmp1->content;
+		if (current->end == ' ')
+			set_redirects(current->string);
+		tmp1 = tmp1->next;
+	}
+//	print_token_list(tokenlist);
 	t_list	*tmp = tokenlist;
 	char old[2];
 	old[0] = escape;
@@ -133,6 +169,8 @@ int		main(int ac, char **av, char **envp)
 	g_shellvars.exitstatus = 0;
 	g_shellvars.loopstatus = 1;
 	g_shellvars.name = ft_substr(ft_strrchr(av[0], '/'), 1, ft_strlen(av[0]) - 1);
+	g_shellvars.og_stdout = dup(STDOUT_FILENO);
+	g_shellvars.og_stdin = dup(STDIN_FILENO);
 	while (g_shellvars.loopstatus)
 	{
 		signal(SIGQUIT, handle_sig);
