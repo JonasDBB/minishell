@@ -70,6 +70,7 @@ typedef struct	s_list
 {
 	void			*content;
 	struct s_list	*next;
+	struct s_list	*previous;
 }				t_list;
 
 void			ft_lstadd_back(t_list **alst, t_list *new);

@@ -31,8 +31,6 @@ static bool	exec(char **args, char *exec_path)
 	else
 	{
 		waitpid(pid, &status, WUNTRACED);
-		while (!WIFEXITED(status) && !WIFSIGNALED(status))
-			waitpid(pid, &status, WUNTRACED);
 		if (WIFEXITED(status))
 			g_shellvars.exitstatus = WEXITSTATUS(status);
 		if (WIFSIGNALED(status))
@@ -80,13 +78,20 @@ static bool	find_path_execs(char **args)
 
 bool		find_executables(char **args)
 {
+	struct stat	buff;
+
 	if (ft_strchr(args[0], '/'))
 	{
-		if (!exec(args, args[0]))
+		if (stat(args[0], &buff))
 		{
-			write(1, "no such file or directory\n", 26);
-			return (false);
+			write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
+			write(1, ": ", 2);
+			write(1, args[0], ft_strlen(args[0]));
+			write(1, ": No such file or directory\n", 28);
+			g_shellvars.exitstatus = 127;
 		}
+		else if (!exec(args, args[0]))
+			write(1,"error executing\n", 16);
 		return (true);
 	}
 	return (find_path_execs(args));

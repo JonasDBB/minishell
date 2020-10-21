@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	builtin_pwd(void)
+void		builtin_pwd(void)
 {
 	char	*path;
 
@@ -24,14 +24,30 @@ void	builtin_pwd(void)
 	g_shellvars.exitstatus = 0;
 }
 
-void	builtin_echo(char **args)
+static bool	is_newline_option(char *str)
+{
+	int	i;
+
+	i = 1;
+	if (str[0] != '-')
+		return (false);
+	while (str[i])
+	{
+		if (str[i] != 'n')
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
+void		builtin_echo(char **args)
 {
 	int		i;
 	bool	newl;
 
 	i = 1;
 	newl = true;
-	if (!ft_strcmp(args[1], "-n"))
+	while (args[i] && is_newline_option(args[i]))
 	{
 		newl = false;
 		i++;
@@ -48,7 +64,7 @@ void	builtin_echo(char **args)
 	g_shellvars.exitstatus = 0;
 }
 
-void	builtin_cd(char **args)
+void		builtin_cd(char **args)
 {
 	int		ret;
 	char	*home;
@@ -72,7 +88,7 @@ void	builtin_cd(char **args)
 	g_shellvars.exitstatus = 0;
 }
 
-void	builtin_env(char *arg)
+void		builtin_env(char *arg)
 {
 	int	i;
 

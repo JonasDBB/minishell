@@ -156,6 +156,7 @@ void	handle_sig(int signal)
 		g_shellvars.exitstatus = 1;
 		write(1, deltwo, 6);
 		write(1, "\n", 1);
+
 		prompt();
 	}
 }
@@ -171,10 +172,11 @@ int		main(int ac, char **av, char **envp)
 	g_shellvars.name = ft_substr(ft_strrchr(av[0], '/'), 1, ft_strlen(av[0]) - 1);
 	g_shellvars.og_stdout = dup(STDOUT_FILENO);
 	g_shellvars.og_stdin = dup(STDIN_FILENO);
+	g_shellvars.is_child = false;
+	signal(SIGQUIT, handle_sig);
+	signal(SIGINT, handle_sig);
 	while (g_shellvars.loopstatus)
 	{
-		signal(SIGQUIT, handle_sig);
-		signal(SIGINT, handle_sig);
 		prompt();
 		g_shellvars.loopstatus = get_next_line(0, &line);
 		do_everything(line);

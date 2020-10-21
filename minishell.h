@@ -27,6 +27,7 @@ typedef struct	s_shellvars {
 	char	 		*name;
 	int				og_stdout;
 	int 			og_stdin;
+	bool			is_child;
 }				t_shellvars;
 
 t_shellvars	g_shellvars;
@@ -55,14 +56,15 @@ typedef struct	s_command {
 
 
 
-void		unset_redirects(char *str);
-
+void	unset_redirects(char *str);
+pid_t	pajp(t_command *first);
 
 /*
 ** main.c
 */
 void	print_token_list(t_list *tokenlist);
 t_list	*tokenizer(char *inputline);
+void	handle_sig(int signal);
 
 /*
 ** builtins.c
@@ -80,12 +82,12 @@ void	do_commands(t_list *commandlist);
 /*
 ** process_commands.c
 */
-bool		find_redirects(char **tokens);
+bool	find_redirects(char **tokens);
 
 /*
 ** executes.c
 */
-bool		find_executables(char **args);
+bool	find_executables(char **args);
 
 /*
 ** env_and_exit_builtins.c
@@ -98,6 +100,7 @@ void	builtin_unset(char **args);
 ** commands.c
 */
 t_list	*commandtokens(t_list *tokenlist);
+void	do_cmnds(t_command *current);
 
 /*
 ** env_aux_functions.c
