@@ -97,13 +97,14 @@ static void		find_breaks(t_list **tokenlist)
 		if (current->end == ' ' && ft_strchr(";|<>", current->string[0]) && current->string[1])
 		{
 			new = ft_lstnew(new_token((current->string + 1), ' ', 'a'));
+			malloc_check(new);
 			if (current->space_after)
 				((t_token*)new->content)->space_after = true;
 			s[0] = current->string[0];
 			free(current->string);
 			current->string = ft_strdup(s);
-			current->space_after = false;
 			malloc_check(current->string);
+			current->space_after = false;
 			new->next = tmp->next;
 			tmp->next = new;
 			continue ;
@@ -149,6 +150,7 @@ static void		find_breaks(t_list **tokenlist)
 t_list			*tokenizer(char *inputline)
 {
 	t_list	*tokenlist;
+	t_list	*new;
 	int		i;
 	char	*buff;
 	char	stop;
@@ -196,7 +198,9 @@ t_list			*tokenizer(char *inputline)
 			space = inputline[i + length];
 		else
 			space = inputline[i + length + 1];
-		ft_lstadd_back(&tokenlist, ft_lstnew(new_token(buff, stop, space)));
+		new = ft_lstnew(new_token(buff, stop, space));
+		malloc_check(new);
+		ft_lstadd_back(&tokenlist, new);
 		size++;
 		if (ft_lstsize(tokenlist) != size)
 			leaks_exit("malloc fail", 1);

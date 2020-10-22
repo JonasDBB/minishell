@@ -11,14 +11,14 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
 
 void	create_pipe(t_command *current, t_command *previous, pid_t *pids)
 {
 	pid_t	pid;
 	int 	status;
 
-	pipe(current->pipe_fds);
+	if (pipe(current->pipe_fds) == -1)
+		leaks_exit("error creating pipe", -1);
 	pid = fork();
 	if (pid < 0)
 		leaks_exit("error forking", 1);
@@ -27,12 +27,14 @@ void	create_pipe(t_command *current, t_command *previous, pid_t *pids)
 		g_shellvars.is_child = true;
 		if (current->type == '|')
 		{
-			dup2(current->pipe_fds[1], STDOUT_FILENO);
+			if (dup2(current->pipe_fds[1], STDOUT_FILENO) == -1)
+				leaks_exit("error dupping in pipe", -1);
 			close(current->pipe_fds[1]);
 		}
 		if (previous && previous->type == '|')
 		{
-			dup2(previous->pipe_fds[0], STDIN_FILENO);
+			if (dup2(previous->pipe_fds[0], STDIN_FILENO) == -1)
+				leaks_exit("error dupping in pipe", -1);
 			close(previous->pipe_fds[0]);
 		}
 		do_cmnds(current);

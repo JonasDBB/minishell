@@ -15,8 +15,8 @@
 
 void	concat_list(t_list *tokenlist)
 {
-	t_list		*current;
-	t_list		*next_elem;
+	t_list	*current;
+	t_list	*next_elem;
 	t_token	*current_token;
 	t_token	*next_token;
 
@@ -54,19 +54,7 @@ static void		set_redirects(char *str)
 	}
 }
 
-void		unset_redirects(char *str)
-{
-	if (str[0] == redirect_input)
-		str[0] = '<';
-	if (str[0] == redirect_trunc)
-		str[0] = '>';
-	if (str[0] == redirect_append)
-	{
-		str[0] = '>';
-		str[1] = '>';
-	}
-}
-
+/*
 void	print_token_list(t_list *tokenlist)
 {
 	t_list	*tmp;
@@ -89,11 +77,18 @@ void	print_token_list(t_list *tokenlist)
 	}
 	printf("\033[0m|-\n");
 }
-
+*/
 void	do_everything(char *line)
 {
 	t_list	*tokenlist;
 	t_list	*commands;
+	t_list	*tmp;
+	t_list	*tmp1;
+	t_token	*current;
+	char	old[2];
+
+	old[0] = escape;
+	old[1] = 0;
 
 	if (!ft_strlen(line))
 		return ;
@@ -108,32 +103,25 @@ void	do_everything(char *line)
 		ft_lstclear(&tokenlist, free_one_token);
 		return ;
 	}
-	t_list *tmp1 = tokenlist;
+	tmp1 = tokenlist;
 	while(tmp1)
 	{
-		t_token *current = (t_token*)tmp1->content;
+		current = (t_token*)tmp1->content;
 		if (current->end == ' ')
 			set_redirects(current->string);
 		tmp1 = tmp1->next;
 	}
-//	print_token_list(tokenlist);
-	t_list	*tmp = tokenlist;
-	char old[2];
-	old[0] = escape;
-	old[1] = 0;
+	tmp = tokenlist;
 	while(tmp)
 	{
-
 		if (((t_token*)tmp->content)->end == '\"')
 			unsetescapeif(((t_token*)tmp->content)->string);
 		((t_token*)tmp->content)->string = ft_replace(((t_token*)tmp->content)->string, old, "");
 		malloc_check(((t_token*)tmp->content)->string);
 		tmp = tmp->next;
 	}
-
 	commands = commandtokens(tokenlist);
 	do_commands(commands);
-
 	ft_lstclear(&commands, free_one_command);
 }
 
@@ -160,7 +148,6 @@ void	handle_sig(int signal)
 		g_shellvars.exitstatus = 1;
 		write(1, deltwo, 6);
 		write(1, "\n", 1);
-
 		prompt();
 	}
 }
@@ -174,8 +161,11 @@ int		main(int ac, char **av, char **envp)
 	g_shellvars.exitstatus = 0;
 	g_shellvars.loopstatus = 1;
 	g_shellvars.name = ft_substr(ft_strrchr(av[0], '/'), 1, ft_strlen(av[0]) - 1);
+	malloc_check(g_shellvars.name);
 	g_shellvars.og_stdout = dup(STDOUT_FILENO);
 	g_shellvars.og_stdin = dup(STDIN_FILENO);
+	if (g_shellvars.og_stdout == -1 || g_shellvars.og_stdin == -1)
+		leaks_exit("error dupping original filestreams", -1);
 	g_shellvars.is_child = false;
 	signal(SIGQUIT, handle_sig);
 	signal(SIGINT, handle_sig);
@@ -183,10 +173,10 @@ int		main(int ac, char **av, char **envp)
 	{
 		prompt();
 		g_shellvars.loopstatus = get_next_line(0, &line);
+		malloc_check(line);
 		do_everything(line);
 		free(line);
 	}
 	write (1, "exit\n", 5);
-//	leaks_exit("", g_shellvars.exitstatus);
 	exit(g_shellvars.exitstatus);
 }

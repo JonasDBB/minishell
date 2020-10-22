@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
+
 static bool	exec(char **args, char *exec_path)
 {
 	pid_t	pid;
@@ -19,10 +19,10 @@ static bool	exec(char **args, char *exec_path)
 
 	pid = 0;
 	if (!g_shellvars.is_child)
-	{
 		pid = fork();
-	}
-	if (pid == 0)
+	if (pid < 0)
+		leaks_exit("error forking", 1);
+	else if (pid == 0)
 	{
 		if (execve(exec_path, args, g_shellvars.envvars) == -1)
 		{
@@ -30,8 +30,6 @@ static bool	exec(char **args, char *exec_path)
 			return (false);
 		}
 	}
-	else if (pid < 0)
-		leaks_exit("error forking", 1);
 	else
 	{
 		waitpid(pid, &status, WUNTRACED);

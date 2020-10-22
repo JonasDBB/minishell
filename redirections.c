@@ -37,9 +37,7 @@ static int	set_fd_out(char *file, int flag, int old_fd)
 		close(old_fd);
 	fd = open(file, O_CREAT | flag | O_WRONLY, 0644);
 	if (fd == -1)
-	{
 		write(1, "error opening or creating file\n", 31);
-	}
 	return (fd);
 }
 
@@ -94,12 +92,14 @@ bool		find_redirects(char **tokens)
 	}
 	if (fd_out)
 	{
-		dup2(fd_out, STDOUT_FILENO);
+		if (dup2(fd_out, STDOUT_FILENO) == -1)
+			leaks_exit("error setting new stdout", -1);
 		close(fd_out);
 	}
 	if (fd_in)
 	{
-		dup2(fd_in, STDIN_FILENO);
+		if (dup2(fd_in, STDIN_FILENO) == -1)
+			leaks_exit("error setting new stdin", -1);
 		close(fd_in);
 	}
 	return (true);

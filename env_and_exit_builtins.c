@@ -85,6 +85,7 @@ void		builtin_export(char **args)
 			count++;
 		}
 		new[count] = ft_strdup(args[i]);
+		malloc_check(new[count]);
 		free_array(g_shellvars.envvars);
 		g_shellvars.envvars = new;
 		i++;

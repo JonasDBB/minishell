@@ -75,7 +75,7 @@ void		do_commands(t_list *commandlist)
 	t_command	*prev;
 	t_list		*tmp_count;
 	pid_t		*pids;
-	int count;
+	int			count;
 
 	signal(SIGINT, ignoresig);
 	signal(SIGQUIT, ignoresig);
@@ -88,7 +88,6 @@ void		do_commands(t_list *commandlist)
 		if (tmp->previous) {
 			prev = (t_command*)tmp->previous->content;
 		}
-		//===============
 		if (current->type == '|' && (!tmp->previous || prev->type != '|'))
 		{
 			pids = NULL;
@@ -99,23 +98,27 @@ void		do_commands(t_list *commandlist)
 				tmp_count = tmp_count->next;
 			}
 			if (count)
+			{
 				pids = malloc(sizeof(pid_t) * count);
-			ft_bzero(pids, sizeof(pid_t) * count);
+				malloc_check(pids);
+				ft_bzero(pids, sizeof(pid_t) * count);
+			}
 		}
-		//===============
-
-
 		if (current->type == '|' || (prev && prev->type == '|'))
 			create_pipe(current, prev, pids);
 		else
 			do_cmnds(current);
 		if (STDOUT_FILENO != g_shellvars.og_stdout)
-			dup2(g_shellvars.og_stdout, STDOUT_FILENO);
+		{
+			if(dup2(g_shellvars.og_stdout, STDOUT_FILENO) == -1)
+				leaks_exit("error resetting stdout", -1);
+		}
 		if (STDIN_FILENO != g_shellvars.og_stdin)
-			dup2(g_shellvars.og_stdin, STDIN_FILENO);
+		{
+			if(dup2(g_shellvars.og_stdin, STDIN_FILENO) == -1)
+				leaks_exit("error resetting stdout", -1);
+		}
 		tmp = tmp->next;
-		//===============
-
 		if (current->type != '|')
 		{
 			int i = 0;
@@ -127,7 +130,6 @@ void		do_commands(t_list *commandlist)
 			free(pids);
 			pids = NULL;
 		}
-		//===============
 	}
 	signal(SIGQUIT, handle_sig);
 	signal(SIGINT, handle_sig);

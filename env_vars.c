@@ -136,6 +136,7 @@ void		expand_env_var(t_list *tokenlist)
 		current = (t_token*)tmp->content;
 		unset_signs(current->string);
 		current->string = ft_replace(current->string, "$?", exit_status);
+		malloc_check(current->string);
 		if (!current->literal && ft_strchr(current->string, '$'))
 		{
 			start_loc = find_loc(current->string, '$');
@@ -146,12 +147,12 @@ void		expand_env_var(t_list *tokenlist)
 					continue;
 				}
 			identifier = get_old_str(current->string, start_loc);
-			malloc_check(identifier);
 			new = find_env(identifier);
 			old = ft_strjoin("$", identifier);
 			malloc_check(old);
 			free(identifier);
 			current->string = ft_replace(current->string, old, new);
+			malloc_check(current->string);
 			free(old);
 			free(new);
 			reset_signs(current->string);
