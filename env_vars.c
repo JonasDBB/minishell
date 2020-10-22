@@ -140,7 +140,7 @@ void		expand_env_var(t_list *tokenlist)
 		{
 			start_loc = find_loc(current->string, '$');
 			if (start_loc > 1)
-				if (current->string[start_loc - 2] == escape)
+				if (current->string[start_loc - 2] == escape || current->string[start_loc] == escape)
 				{
 					tmp = tmp->next;
 					continue;

@@ -16,6 +16,8 @@ static t_token	*new_token(char *content, char end, char space_after)
 {
 	t_token *ret;
 
+	if (end == '\'')
+		unsetescape(content);
 	ret = malloc(sizeof(t_token));
 	malloc_check(ret);
 	ret->string = ft_strdup(content);
@@ -166,9 +168,9 @@ t_list			*tokenizer(char *inputline)
 	buff = malloc(ft_strlen(inputline + i));
 	malloc_check(buff);
 	tokenlist = NULL;
-	setescape(inputline);
 	while (inputline[i])
 	{
+		setescape(inputline);
 		stop = ' ';
 		while (ft_isspace(inputline[i]))
 			i++;
@@ -180,6 +182,8 @@ t_list			*tokenizer(char *inputline)
 				stop = inputline[i];
 				i++;
 			}
+		if (stop == '\'')
+			unsetescape(inputline);
 		length = len(inputline, stop, i);
 		if (length == -1)
 		{

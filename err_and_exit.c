@@ -30,10 +30,14 @@ void	free_array(char **array)
 	}
 	free(array);
 }
-
+#include <stdio.h>
 void	free_one_command(void *token)
 {
 	free_array(((t_command*)token)->tokens);
+//	dprintf(g_shellvars.og_stdout, "errno before close %i\n", errno);
+//	close(((t_command*)token)->pipe_fds[0]);
+//	close(((t_command*)token)->pipe_fds[1]);
+//	dprintf(g_shellvars.og_stdout, "errno after close %i\n", errno);
 	free(token);
 }
 

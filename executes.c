@@ -11,13 +11,17 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-
+#include <stdio.h>
 static bool	exec(char **args, char *exec_path)
 {
 	pid_t	pid;
 	int		status;
 
-	pid = fork();
+	pid = 0;
+	if (!g_shellvars.is_child)
+	{
+		pid = fork();
+	}
 	if (pid == 0)
 	{
 		if (execve(exec_path, args, g_shellvars.envvars) == -1)

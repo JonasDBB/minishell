@@ -77,3 +77,16 @@ void	unsetescape(char *s)
 		i++;
 	}
 }
+
+void	unsetescapeif(char *s)
+{
+	int i;
+
+	i = 0;
+	while (s[i])
+	{
+		if (s[i] == escape && s[i + 1] && s[i + 1] != '$' && s[i + 1] != '\\')
+			s[i] = '\\';
+		i++;
+	}
+}

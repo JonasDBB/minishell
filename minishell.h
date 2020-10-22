@@ -19,7 +19,7 @@
 # include <stdbool.h>
 # include <signal.h>
 # include <sys/stat.h>
-
+# include <errno.h>
 typedef struct	s_shellvars {
 	char			**envvars;
 	int 			loopstatus;
@@ -52,12 +52,14 @@ typedef struct	s_token {
 typedef struct	s_command {
 	char	**tokens;
 	char	type;
+	int		pipe_fds[2];
 }				t_command;
 
 
+void	unsetescapeif(char *s);
 
 void	unset_redirects(char *str);
-pid_t	pajp(t_command *first);
+void	create_pipe(t_command *current, t_command *previous, pid_t *pids);
 
 /*
 ** main.c

@@ -11,25 +11,52 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <stdio.h>
 
-pid_t	pajp(t_command *first)
+void	create_pipe(t_command *current, t_command *previous, pid_t *pids)
 {
-	pid_t	pid_child;
-	int		fd[2];
+	pid_t	pid;
+	int 	status;
 
-	if (pipe(fd) < 0)
-		exit(69);
-	pid_child = fork();
-	if (pid_child < 0)
+	pipe(current->pipe_fds);
+	pid = fork();
+	if (pid < 0)
 		leaks_exit("error forking", 1);
-	if (pid_child == 0)
+	else if (pid == 0)
 	{
 		g_shellvars.is_child = true;
-		close(fd[0]);
-		dup2(fd[1], STDOUT_FILENO);
-		close(fd[1]);
-		do_cmnds(first);
-		exit(0);
+		if (current->type == '|')
+		{
+			dup2(current->pipe_fds[1], STDOUT_FILENO);
+			close(current->pipe_fds[1]);
+		}
+		if (previous && previous->type == '|')
+		{
+			dup2(previous->pipe_fds[0], STDIN_FILENO);
+			close(previous->pipe_fds[0]);
+		}
+		do_cmnds(current);
+		exit(g_shellvars.exitstatus);
 	}
-	return (pid_child);
+	else
+	{
+		close(current->pipe_fds[1]);
+		if (current->type != '|')
+			waitpid(pid, &status, WUNTRACED);
+		else
+		{
+			int i = 0;
+			while (pids[i])
+				i++;
+			pids[i] = pid;
+		}
+		if (current->type != '|')
+			close(current->pipe_fds[0]);
+		if (previous && previous->type == '|')
+			close(previous->pipe_fds[0]);
+		if (WIFEXITED(status))
+			g_shellvars.exitstatus = WEXITSTATUS(status);
+		if (WIFSIGNALED(status))
+			g_shellvars.exitstatus = WTERMSIG(status) + 128;
+	}
 }

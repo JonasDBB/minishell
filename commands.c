@@ -64,6 +64,8 @@ t_command	*new_command(t_list *tokenlist)
 
 	ret = malloc(sizeof(t_command));
 	malloc_check(ret);
+	ret->pipe_fds[0] = -1;
+	ret->pipe_fds[1] = -1;
 	tmp = tokenlist;
 	count = 0;
 	while (!command_splitting((t_token*)tmp->content) && tmp->next)
@@ -80,12 +82,14 @@ t_command	*new_command(t_list *tokenlist)
 	while (!command_splitting((t_token*)tmp->content) && tmp->next)
 	{
 		ret->tokens[i] = ft_strdup(((t_token*)tmp->content)->string);
+		malloc_check(ret->tokens[i]);
 		i++;
 		tmp = tmp->next;
 	}
 	if (!tmp->next)
 	{
 		ret->tokens[i] = ft_strdup(((t_token*)tmp->content)->string);
+		malloc_check(ret->tokens[i]);
 		ret->type = end;
 	}
 	else
@@ -105,12 +109,12 @@ t_list		*commandtokens(t_list *tokenlist)
 	while (tmp)
 	{
 		new = ft_lstnew(new_command(tmp));
+		malloc_check(new);
 		ft_lstadd_back(&commandlist, new);
 		while (!command_splitting((t_token*)tmp->content) && tmp->next)
 			tmp = tmp->next;
 		tmp = tmp->next;
 	}
-//	printcommandlist(commandlist);
 	ft_lstclear(&tokenlist, free_one_token);
 	return (commandlist);
 }

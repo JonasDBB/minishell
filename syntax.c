@@ -29,6 +29,7 @@ static bool	syntax_error(char *token)
 	write(2, ": syntax error near unexpected token `", 38);
 	write(2, token, ft_strlen(token));
 	write(2, "\'\n", 2);
+	g_shellvars.exitstatus = (unsigned char)258;
 	return (false);
 }
 

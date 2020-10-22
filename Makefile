@@ -28,7 +28,8 @@ env_and_exit_builtins.c \
 env_aux_functions.c \
 process_commands.c \
 executes.c \
-redirections.c
+redirections.c \
+pieps.c
 
 OBJS = $(SRCS:.c=.o)
 

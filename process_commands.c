@@ -29,10 +29,9 @@ static int	low_case_strcmp(char *s1, char *s2)
 	free(s1lower);
 	return (i);
 }
-#include <stdio.h>
+
 void		do_cmnds(t_command *current)
 {
-//	printf("executing with first token %s\n", current->tokens[0]);
 	if (!find_redirects(current->tokens) || !current->tokens[0])
 	{
 		if (current->tokens[0])
@@ -60,10 +59,6 @@ void		do_cmnds(t_command *current)
 			write(1, current->tokens[0], ft_strlen(current->tokens[0]));
 			write(1, ": command not found\n", 20);
 		}
-	if (g_shellvars.is_child)
-	{
-		exit(g_shellvars.exitstatus);
-	}
 }
 
 // this is to not do anything on catching sig in child process
@@ -77,28 +72,62 @@ void		do_commands(t_list *commandlist)
 {
 	t_list		*tmp;
 	t_command	*current;
-	pid_t		pid_child;
-	int			status;
-	int			piping;
+	t_command	*prev;
+	t_list		*tmp_count;
+	pid_t		*pids;
+	int count;
 
 	signal(SIGINT, ignoresig);
 	signal(SIGQUIT, ignoresig);
 	tmp = commandlist;
+	pids = NULL;
 	while (tmp)
 	{
-		piping = 0;
 		current = (t_command*)tmp->content;
-		if (current->type == '|' || (tmp->previous && ((t_command*)tmp->previous->content)->type))
-		{
-			piping = 1;
-			pid_child = pajp(current);
-			waitpid(pid_child, &status, WUNTRACED);
-			tmp = tmp->next;
+		prev = NULL;
+		if (tmp->previous) {
+			prev = (t_command*)tmp->previous->content;
 		}
-		do_cmnds(current);
+		//===============
+		if (current->type == '|' && (!tmp->previous || prev->type != '|'))
+		{
+			pids = NULL;
+			tmp_count = tmp;
+			count = 0;
+			while (((t_command *) tmp_count->content)->type == '|') {
+				count++;
+				tmp_count = tmp_count->next;
+			}
+			if (count)
+				pids = malloc(sizeof(pid_t) * count);
+			ft_bzero(pids, sizeof(pid_t) * count);
+		}
+		//===============
+
+
+		if (current->type == '|' || (prev && prev->type == '|'))
+			create_pipe(current, prev, pids);
+		else
+			do_cmnds(current);
+		if (STDOUT_FILENO != g_shellvars.og_stdout)
+			dup2(g_shellvars.og_stdout, STDOUT_FILENO);
+		if (STDIN_FILENO != g_shellvars.og_stdin)
+			dup2(g_shellvars.og_stdin, STDIN_FILENO);
 		tmp = tmp->next;
-		dup2(g_shellvars.og_stdout, STDOUT_FILENO);
-		dup2(g_shellvars.og_stdin, STDIN_FILENO);
+		//===============
+
+		if (current->type != '|')
+		{
+			int i = 0;
+			while (pids && i < count)
+			{
+				wait(&pids[i]);
+				i++;
+			}
+			free(pids);
+			pids = NULL;
+		}
+		//===============
 	}
 	signal(SIGQUIT, handle_sig);
 	signal(SIGINT, handle_sig);

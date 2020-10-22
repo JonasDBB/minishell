@@ -29,7 +29,7 @@ static bool	is_newline_option(char *str)
 	int	i;
 
 	i = 1;
-	if (str[0] != '-')
+	if (str[0] != '-' || !str[1])
 		return (false);
 	while (str[i])
 	{
@@ -72,6 +72,15 @@ void		builtin_cd(char **args)
 	if (!args[1])
 	{
 		home = find_env("HOME");
+		if (!ft_strcmp(home, ""))
+		{
+			write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
+			write(1, ": ", 2);
+			write(1, "cd: HOME not set\n", 17);
+			g_shellvars.exitstatus = 1;
+			free(home);
+			return ;
+		}
 		ret = chdir(home);
 		free(home);
 	}

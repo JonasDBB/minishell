@@ -123,10 +123,14 @@ void	do_everything(char *line)
 	old[1] = 0;
 	while(tmp)
 	{
+
+		if (((t_token*)tmp->content)->end == '\"')
+			unsetescapeif(((t_token*)tmp->content)->string);
 		((t_token*)tmp->content)->string = ft_replace(((t_token*)tmp->content)->string, old, "");
 		malloc_check(((t_token*)tmp->content)->string);
 		tmp = tmp->next;
 	}
+
 	commands = commandtokens(tokenlist);
 	do_commands(commands);
 
