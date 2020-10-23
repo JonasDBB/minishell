@@ -21,7 +21,7 @@
 # include <sys/stat.h>
 # include <errno.h>
 typedef struct	s_shellvars {
-	char			**envvars;
+	char			**env;
 	int 			loopstatus;
 	unsigned char 	exitstatus;
 	char	 		*name;
@@ -30,11 +30,11 @@ typedef struct	s_shellvars {
 	bool			is_child;
 }				t_shellvars;
 
-t_shellvars	g_shellvars;
+t_shellvars	g_shell;
 
 enum			e_state
 {
-	end,
+	last,
 	redirect_trunc,
 	redirect_append,
 	redirect_input,
@@ -43,7 +43,7 @@ enum			e_state
 };
 
 typedef struct	s_token {
-	char	*string;
+	char	*str;
 	bool 	literal;
 	char 	end;
 	bool 	space_after;
@@ -55,8 +55,21 @@ typedef struct	s_command {
 	int		pipe_fds[2];
 }				t_command;
 
+typedef struct	s_pipe_pids {
+	pid_t	*pids;
+	int		size;
+}				t_pipe_pids;
 
-void	unsetescapeif(char *s);
+
+void		set_exit_from_child(int status);
+
+
+
+
+
+
+
+void	unsetescape_if_literal(char *s);
 
 void	unset_redirects(char *str);
 void	create_pipe(t_command *current, t_command *previous, pid_t *pids);
@@ -102,7 +115,7 @@ void	builtin_unset(char **args);
 ** commands.c
 */
 t_list	*commandtokens(t_list *tokenlist);
-void	do_cmnds(t_command *current);
+void	find_command(t_command *current);
 
 /*
 ** env_aux_functions.c
@@ -141,6 +154,5 @@ void	unsetescape(char *s);
 */
 bool	syntax_check(t_list *tokenlist);
 bool	is_splitting(t_token *token);
-
 
 #endif

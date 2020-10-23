@@ -12,50 +12,46 @@
 
 #include "minishell.h"
 
+void		set_exit_from_child(int status)
+{
+	if (WIFEXITED(status))
+		g_shell.exitstatus = WEXITSTATUS(status);
+	if (WIFSIGNALED(status))
+		g_shell.exitstatus = WTERMSIG(status) + 128;
+}
+
 static bool	exec(char **args, char *exec_path)
 {
 	pid_t	pid;
 	int		status;
 
 	pid = 0;
-	if (!g_shellvars.is_child)
+	if (!g_shell.is_child)
 		pid = fork();
 	if (pid < 0)
 		leaks_exit("error forking", 1);
 	else if (pid == 0)
 	{
-		if (execve(exec_path, args, g_shellvars.envvars) == -1)
+		if (execve(exec_path, args, g_shell.env) == -1)
 		{
-			g_shellvars.exitstatus = 127;
+			g_shell.exitstatus = 127;
 			return (false);
 		}
 	}
 	else
 	{
 		waitpid(pid, &status, WUNTRACED);
-		if (WIFEXITED(status))
-			g_shellvars.exitstatus = WEXITSTATUS(status);
-		if (WIFSIGNALED(status))
-			g_shellvars.exitstatus = WTERMSIG(status) + 128;
+		set_exit_from_child(status);
 	}
 	return (true);
 }
 
-static bool	find_path_execs(char **args)
+static bool	find_exec(char **args, char **path, char *executable)
 {
-	char		**path;
-	char		*paths;
-	char		*executable;
-	char		*exec_path;
 	int			i;
+	char		*exec_path;
 	struct stat	buff;
 
-	paths = find_env("PATH");
-	path = ft_split(paths, ':');
-	free(paths);
-	malloc_check(path);
-	executable = ft_strjoin("/", args[0]);
-	malloc_check(executable);
 	i = 0;
 	while (path[i])
 	{
@@ -72,9 +68,26 @@ static bool	find_path_execs(char **args)
 		free(exec_path);
 		i++;
 	}
+	return (false);
+}
+
+static bool	find_path_execs(char **args)
+{
+	char		**path;
+	char		*paths;
+	char		*executable;
+
+	paths = find_env("PATH");
+	path = ft_split(paths, ':');
+	free(paths);
+	malloc_check(path);
+	executable = ft_strjoin("/", args[0]);
+	malloc_check(executable);
+	if (find_exec(args, path, executable))
+		return (true);
 	free_array(path);
 	free(executable);
-	g_shellvars.exitstatus = 127;
+	g_shell.exitstatus = 127;
 	return (false);
 }
 
@@ -86,14 +99,14 @@ bool		find_executables(char **args)
 	{
 		if (stat(args[0], &buff))
 		{
-			write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
+			write(1, g_shell.name, ft_strlen(g_shell.name));
 			write(1, ": ", 2);
 			write(1, args[0], ft_strlen(args[0]));
 			write(1, ": No such file or directory\n", 28);
-			g_shellvars.exitstatus = 127;
+			g_shell.exitstatus = 127;
 		}
 		else if (!exec(args, args[0]))
-			write(1,"error executing\n", 16);
+			write(1, "error executing\n", 16);
 		return (true);
 	}
 	return (find_path_execs(args));

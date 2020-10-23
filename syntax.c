@@ -16,20 +16,20 @@ bool		is_splitting(t_token *token)
 {
 	if (token->end != ' ')
 		return (false);
-	if (!ft_strchr(";|<>", token->string[0]))
+	if (!ft_strchr(";|<>", token->str[0]))
 		return (false);
-	if (!token->string[0])
+	if (!token->str[0])
 		return (false);
 	return (true);
 }
 
 static bool	syntax_error(char *token)
 {
-	write(2, g_shellvars.name, ft_strlen(g_shellvars.name));
+	write(2, g_shell.name, ft_strlen(g_shell.name));
 	write(2, ": syntax error near unexpected token `", 38);
 	write(2, token, ft_strlen(token));
 	write(2, "\'\n", 2);
-	g_shellvars.exitstatus = (unsigned char)258;
+	g_shell.exitstatus = (unsigned char)258;
 	return (false);
 }
 
@@ -50,20 +50,20 @@ bool		syntax_check(t_list *tokenlist)
 
 	tmp = ft_lstlast(tokenlist);
 	current = (t_token*)tmp->content;
-	if (is_splitting(current) && current->string[0] != ';')
+	if (is_splitting(current) && current->str[0] != ';')
 		return (syntax_error("newline"));
 	tmp = tokenlist;
 	current = (t_token*)tmp->content;
-	if (is_splitting(current) && (current->string[0] == ';'
-			|| (current->string[0] == '|')))
-		return (syntax_error(current->string));
+	if (is_splitting(current) && (current->str[0] == ';'
+			|| (current->str[0] == '|')))
+		return (syntax_error(current->str));
 	while (tmp->next)
 	{
 		current = (t_token*)tmp->content;
 		next = (t_token*)tmp->next->content;
 		if (is_splitting(current) && is_splitting(next))
 		{
-			if (!check_combo(current->string, next->string))
+			if (!check_combo(current->str, next->str))
 				return (false);
 		}
 		tmp = tmp->next;

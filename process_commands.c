@@ -30,12 +30,20 @@ static int	low_case_strcmp(char *s1, char *s2)
 	return (i);
 }
 
-void		do_cmnds(t_command *current)
+static void	command_not_found(char *cmd)
+{
+	write(1, g_shell.name, ft_strlen(g_shell.name));
+	write(1, ": ", 2);
+	write(1, cmd, ft_strlen(cmd));
+	write(1, ": command not found\n", 20);
+}
+
+void		find_command(t_command *current)
 {
 	if (!find_redirects(current->tokens) || !current->tokens[0])
 	{
 		if (current->tokens[0])
-			g_shellvars.exitstatus = 1;
+			g_shell.exitstatus = 1;
 		return ;
 	}
 	if (!low_case_strcmp(current->tokens[0], "echo"))
@@ -53,83 +61,100 @@ void		do_cmnds(t_command *current)
 	else if (!ft_strcmp(current->tokens[0], "exit"))
 		builtin_exit(current->tokens);
 	else if (!find_executables(current->tokens))
-		{
-			write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
-			write(1, ": ", 2);
-			write(1, current->tokens[0], ft_strlen(current->tokens[0]));
-			write(1, ": command not found\n", 20);
-		}
+		command_not_found(current->tokens[0]);
 }
 
-// this is to not do anything on catching sig in child process
+/*
+** this is to not do anything on catching sig in child process
+*/
+
 void		ignoresig(int sig)
 {
 	(void)sig;
 	write(1, "\n", 1);
 }
 
+void		prep_pids(t_pipe_pids *pipe_pids, t_list *current_elem)
+{
+	t_list	*tmp;
+
+	pipe_pids->pids = NULL;
+	tmp = current_elem;
+	pipe_pids->size = 0;
+	while (((t_command*)tmp->content)->type == '|')
+	{
+		pipe_pids->size++;
+		tmp = tmp->next;
+	}
+	if (pipe_pids->size)
+	{
+		pipe_pids->pids = malloc(sizeof(pid_t) * pipe_pids->size);
+		malloc_check(pipe_pids->pids);
+		ft_bzero(pipe_pids->pids, sizeof(pid_t) * pipe_pids->size);
+	}
+}
+
+void		reset_fds(void)
+{
+	if (STDOUT_FILENO != g_shell.og_stdout)
+	{
+		if (dup2(g_shell.og_stdout, STDOUT_FILENO) == -1)
+			leaks_exit("error resetting stdout", -1);
+	}
+	if (STDIN_FILENO != g_shell.og_stdin)
+	{
+		if (dup2(g_shell.og_stdin, STDIN_FILENO) == -1)
+			leaks_exit("error resetting stdout", -1);
+	}
+}
+
+void		wait_for_pipe_pids(t_pipe_pids *pipe_pids)
+{
+	int	i;
+
+	i = 0;
+	while (pipe_pids->pids && i < pipe_pids->size)
+	{
+		wait(&(pipe_pids->pids[i]));
+		i++;
+	}
+	free(pipe_pids->pids);
+	pipe_pids->pids = NULL;
+}
+
+void		do_one_command(t_list *tmp, t_pipe_pids *pipe_pids)
+{
+	t_command	*current;
+	t_command	*prev;
+
+	current = (t_command*)tmp->content;
+	prev = NULL;
+	if (tmp->previous)
+		prev = (t_command*)tmp->previous->content;
+	if (current->type == '|' && (!tmp->previous || prev->type != '|'))
+		prep_pids(pipe_pids, tmp);
+	if (current->type == '|' || (prev && prev->type == '|'))
+		create_pipe(current, prev, (*pipe_pids).pids);
+	else
+		find_command(current);
+	reset_fds();
+	if (current->type != '|')
+		wait_for_pipe_pids(pipe_pids);
+}
+
 void		do_commands(t_list *commandlist)
 {
 	t_list		*tmp;
-	t_command	*current;
-	t_command	*prev;
-	t_list		*tmp_count;
-	pid_t		*pids;
-	int			count;
+	t_pipe_pids	pipe_pids;
 
 	signal(SIGINT, ignoresig);
 	signal(SIGQUIT, ignoresig);
 	tmp = commandlist;
-	pids = NULL;
+	pipe_pids.pids = NULL;
 	while (tmp)
 	{
-		current = (t_command*)tmp->content;
-		prev = NULL;
-		if (tmp->previous) {
-			prev = (t_command*)tmp->previous->content;
-		}
-		if (current->type == '|' && (!tmp->previous || prev->type != '|'))
-		{
-			pids = NULL;
-			tmp_count = tmp;
-			count = 0;
-			while (((t_command *) tmp_count->content)->type == '|') {
-				count++;
-				tmp_count = tmp_count->next;
-			}
-			if (count)
-			{
-				pids = malloc(sizeof(pid_t) * count);
-				malloc_check(pids);
-				ft_bzero(pids, sizeof(pid_t) * count);
-			}
-		}
-		if (current->type == '|' || (prev && prev->type == '|'))
-			create_pipe(current, prev, pids);
-		else
-			do_cmnds(current);
-		if (STDOUT_FILENO != g_shellvars.og_stdout)
-		{
-			if(dup2(g_shellvars.og_stdout, STDOUT_FILENO) == -1)
-				leaks_exit("error resetting stdout", -1);
-		}
-		if (STDIN_FILENO != g_shellvars.og_stdin)
-		{
-			if(dup2(g_shellvars.og_stdin, STDIN_FILENO) == -1)
-				leaks_exit("error resetting stdout", -1);
-		}
+		do_one_command(tmp, &pipe_pids);
 		tmp = tmp->next;
-		if (current->type != '|')
-		{
-			int i = 0;
-			while (pids && i < count)
-			{
-				wait(&pids[i]);
-				i++;
-			}
-			free(pids);
-			pids = NULL;
-		}
 	}
 	signal(SIGQUIT, handle_sig);
 	signal(SIGINT, handle_sig);

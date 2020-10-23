@@ -21,11 +21,11 @@ void	merge_tokens(t_list *current, t_list *next_elem)
 	current_token = (t_token*)current->content;
 	next_token = (t_token*)next_elem->content;
 	current_token->space_after = next_token->space_after;
-	newstr = ft_strjoin(current_token->string, next_token->string);
+	newstr = ft_strjoin(current_token->str, next_token->str);
 	malloc_check(newstr);
-	free(current_token->string);
-	current_token->string = ft_strdup(newstr);
-	malloc_check(current_token->string);
+	free(current_token->str);
+	current_token->str = ft_strdup(newstr);
+	malloc_check(current_token->str);
 	free(newstr);
 	current->next = current->next->next;
 	free_one_token(next_elem->content);
@@ -41,8 +41,8 @@ void	create_append(t_list *tokenlist)
 	tmp = tokenlist;
 	while (tmp && tmp->next)
 	{
-		first = ((t_token*)tmp->content)->string[0];
-		second = ((t_token*)tmp->next->content)->string[0];
+		first = ((t_token*)tmp->content)->str[0];
+		second = ((t_token*)tmp->next->content)->str[0];
 		if (first == '>' && second == '>'
 			&& !((t_token*)tmp->content)->space_after)
 			merge_tokens(tmp, tmp->next);
@@ -78,7 +78,7 @@ void	unsetescape(char *s)
 	}
 }
 
-void	unsetescapeif(char *s)
+void	unsetescape_if_literal(char *s)
 {
 	int i;
 

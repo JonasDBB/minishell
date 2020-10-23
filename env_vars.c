@@ -48,31 +48,30 @@ static int	find_loc(char const *string, char c)
 char		*find_env(char *identifier)
 {
 	int		i;
-	char	*before_eq;
-	char	*after_eq;
-	int		equals_loc;
+	char	*before;
+	char	*after;
+	int		loc;
 
 	i = 0;
-	while (g_shellvars.envvars[i])
+	while (g_shell.env[i])
 	{
-		equals_loc = find_loc(g_shellvars.envvars[i], '=');
-		before_eq = ft_substr(g_shellvars.envvars[i], 0, equals_loc - 1);
-		malloc_check(before_eq);
-		after_eq = ft_substr(g_shellvars.envvars[i], equals_loc,
-						ft_strlen(g_shellvars.envvars[i]) - equals_loc);
-		malloc_check(after_eq);
-		if (!ft_strcmp(identifier, before_eq))
+		loc = find_loc(g_shell.env[i], '=');
+		before = ft_substr(g_shell.env[i], 0, loc - 1);
+		malloc_check(before);
+		after = ft_substr(g_shell.env[i], loc, ft_strlen(g_shell.env[i]) - loc);
+		malloc_check(after);
+		if (!ft_strcmp(identifier, before))
 		{
-			free(before_eq);
-			return (after_eq);
+			free(before);
+			return (after);
 		}
-		free(before_eq);
-		free(after_eq);
+		free(before);
+		free(after);
 		i++;
 	}
-	after_eq = ft_strdup("");
-	malloc_check(after_eq);
-	return (after_eq);
+	after = ft_strdup("");
+	malloc_check(after);
+	return (after);
 }
 
 static char	*get_old_str(char *str, int loc)
@@ -119,49 +118,63 @@ void		reset_signs(char *string)
 	}
 }
 
-void		expand_env_var(t_list *tokenlist)
+void		replace_env_var(t_token *current, int start_loc)
 {
-	t_list	*tmp;
-	t_token	*current;
-	int		start_loc;
 	char	*identifier;
 	char	*old;
 	char	*new;
+
+	identifier = get_old_str(current->str, start_loc);
+	new = find_env(identifier);
+	old = ft_strjoin("$", identifier);
+	malloc_check(old);
+	free(identifier);
+	current->str = ft_replace(current->str, old, new);
+	malloc_check(current->str);
+	free(old);
+	free(new);
+	reset_signs(current->str);
+}
+
+t_token		*prep_token(const t_list *tmp, t_token *current)
+{
 	char	*exit_status;
 
+	exit_status = ft_itoa(g_shell.exitstatus);
+	malloc_check(exit_status);
+	current = (t_token*)tmp->content;
+	unset_signs(current->str);
+	current->str = ft_replace(current->str, "$?", exit_status);
+	malloc_check(current->str);
+	free(exit_status);
+	return (current);
+}
+
+void		expand_env_var(t_list *tokenlist)
+{
+	t_list	*tmp;
+	t_token	*cur;
+	int		start;
+
 	tmp = tokenlist;
-	exit_status = ft_itoa((int)g_shellvars.exitstatus);
 	while (tmp)
 	{
-		current = (t_token*)tmp->content;
-		unset_signs(current->string);
-		current->string = ft_replace(current->string, "$?", exit_status);
-		malloc_check(current->string);
-		if (!current->literal && ft_strchr(current->string, '$'))
+		cur = prep_token(tmp, cur);
+		if (!cur->literal && ft_strchr(cur->str, '$'))
 		{
-			start_loc = find_loc(current->string, '$');
-			if (start_loc > 1)
-				if (current->string[start_loc - 2] == escape || current->string[start_loc] == escape)
+			start = find_loc(cur->str, '$');
+			if (start > 1)
+				if (cur->str[start - 2] == escape || cur->str[start] == escape)
 				{
 					tmp = tmp->next;
 					continue;
 				}
-			identifier = get_old_str(current->string, start_loc);
-			new = find_env(identifier);
-			old = ft_strjoin("$", identifier);
-			malloc_check(old);
-			free(identifier);
-			current->string = ft_replace(current->string, old, new);
-			malloc_check(current->string);
-			free(old);
-			free(new);
-			reset_signs(current->string);
+			replace_env_var(cur, start);
 		}
 		else
 		{
-			reset_signs(current->string);
+			reset_signs(cur->str);
 			tmp = tmp->next;
 		}
 	}
-	free(exit_status);
 }

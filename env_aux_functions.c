@@ -29,8 +29,8 @@ bool		env_check(char *arg)
 	}
 	if (!good)
 	{
-		g_shellvars.exitstatus = 1;
-		write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
+		g_shell.exitstatus = 1;
+		write(1, g_shell.name, ft_strlen(g_shell.name));
 		write(1, ": export: `", 11);
 		write(1, arg, ft_strlen(arg));
 		write(1, "\': not a valid identifier\n", 26);
@@ -55,8 +55,8 @@ bool		env_check_unset(char *arg)
 	}
 	if (!good)
 	{
-		g_shellvars.exitstatus = 1;
-		write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
+		g_shell.exitstatus = 1;
+		write(1, g_shell.name, ft_strlen(g_shell.name));
 		write(1, ": unset: `", 10);
 		write(1, arg, ft_strlen(arg));
 		write(1, "\': not a valid identifier\n", 26);
@@ -69,10 +69,10 @@ void		print_env_args(void)
 	int	i;
 
 	i = 0;
-	while (g_shellvars.envvars[i])
+	while (g_shell.env[i])
 	{
 		write(1, "declare -x ", 11);
-		write(1, g_shellvars.envvars[i], ft_strlen(g_shellvars.envvars[i]));
+		write(1, g_shell.env[i], ft_strlen(g_shell.env[i]));
 		write(1, "\n", 1);
 		i++;
 	}
@@ -103,9 +103,9 @@ int			find_env_loc(char *arg)
 	int	i;
 
 	i = 0;
-	while (g_shellvars.envvars[i])
+	while (g_shell.env[i])
 	{
-		if (strcmp_until_equals(arg, g_shellvars.envvars[i]))
+		if (strcmp_until_equals(arg, g_shell.env[i]))
 			return (i);
 		i++;
 	}

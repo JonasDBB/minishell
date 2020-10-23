@@ -11,9 +11,8 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
 
-void	concat_list(t_list *tokenlist)
+void		concat_list(t_list *tokenlist)
 {
 	t_list	*current;
 	t_list	*next_elem;
@@ -28,8 +27,8 @@ void	concat_list(t_list *tokenlist)
 		{
 			next_elem = current->next;
 			next_token = (t_token*)next_elem->content;
-			if (ft_strchr(";|<>", current_token->string[0])
-				|| ft_strchr(";|<>", next_token->string[0]))
+			if (ft_strchr(";|<>", current_token->str[0])
+				|| ft_strchr(";|<>", next_token->str[0]))
 			{
 				current = current->next;
 				continue ;
@@ -41,7 +40,7 @@ void	concat_list(t_list *tokenlist)
 	}
 }
 
-static void		set_redirects(char *str)
+static void	set_redirects(char *str)
 {
 	if (str[0] == '<')
 		str[0] = redirect_input;
@@ -55,40 +54,68 @@ static void		set_redirects(char *str)
 }
 
 /*
-void	print_token_list(t_list *tokenlist)
+**	void	print_token_list(t_list *tokenlist)
+**	{
+**		t_list	*tmp;
+**		int i = 0;
+**
+**		tmp = tokenlist;
+**		printf("         -|"); // to allign output
+**		while (tmp)
+**		{
+**			unsetescape(((t_token*)tmp->content)->str);
+**	//		unset_redirects(((t_token*)tmp->content)->str);
+**			printf("\033[0;36m");
+**			if (i % 2)
+**				printf("\033[0;31m");
+**			printf("%s", ((t_token*)tmp->content)->str);
+**			if (((t_token*)tmp->content)->space_after == true)
+**				printf(" ");
+**			tmp = tmp->next;
+**			i++;
+**		}
+**		printf("\033[0m|-\n");
+**	}
+*/
+
+void		remove_escapes(t_list *tokenlist)
 {
 	t_list	*tmp;
-	int i = 0;
+	char	old[2];
 
 	tmp = tokenlist;
-	printf("         -|"); // to allign output
+	old[0] = escape;
+	old[1] = 0;
 	while (tmp)
 	{
-		unsetescape(((t_token*)tmp->content)->string);
-//		unset_redirects(((t_token*)tmp->content)->string);
-		printf("\033[0;36m");
-		if (i % 2)
-			printf("\033[0;31m");
-		printf("%s", ((t_token*)tmp->content)->string);
-		if (((t_token*)tmp->content)->space_after == true)
-			printf(" ");
+		if (((t_token*)tmp->content)->end == '\"')
+			unsetescape_if_literal(((t_token*)tmp->content)->str);
+		((t_token*)tmp->content)->str =
+				ft_replace(((t_token*)tmp->content)->str, old, "");
+		malloc_check(((t_token*)tmp->content)->str);
 		tmp = tmp->next;
-		i++;
 	}
-	printf("\033[0m|-\n");
 }
-*/
-void	do_everything(char *line)
+
+void		set_redirs(t_list *tokenlist)
+{
+	t_list	*tmp;
+	t_token	*current;
+
+	tmp = tokenlist;
+	while (tmp)
+	{
+		current = (t_token*)tmp->content;
+		if (current->end == ' ')
+			set_redirects(current->str);
+		tmp = tmp->next;
+	}
+}
+
+void		do_everything(char *line)
 {
 	t_list	*tokenlist;
 	t_list	*commands;
-	t_list	*tmp;
-	t_list	*tmp1;
-	t_token	*current;
-	char	old[2];
-
-	old[0] = escape;
-	old[1] = 0;
 
 	if (!ft_strlen(line))
 		return ;
@@ -103,35 +130,20 @@ void	do_everything(char *line)
 		ft_lstclear(&tokenlist, free_one_token);
 		return ;
 	}
-	tmp1 = tokenlist;
-	while(tmp1)
-	{
-		current = (t_token*)tmp1->content;
-		if (current->end == ' ')
-			set_redirects(current->string);
-		tmp1 = tmp1->next;
-	}
-	tmp = tokenlist;
-	while(tmp)
-	{
-		if (((t_token*)tmp->content)->end == '\"')
-			unsetescapeif(((t_token*)tmp->content)->string);
-		((t_token*)tmp->content)->string = ft_replace(((t_token*)tmp->content)->string, old, "");
-		malloc_check(((t_token*)tmp->content)->string);
-		tmp = tmp->next;
-	}
+	set_redirs(tokenlist);
+	remove_escapes(tokenlist);
 	commands = commandtokens(tokenlist);
 	do_commands(commands);
 	ft_lstclear(&commands, free_one_command);
 }
 
-void	prompt(void)
+void		prompt(void)
 {
-	write(1, g_shellvars.name, ft_strlen(g_shellvars.name));
+	write(1, g_shell.name, ft_strlen(g_shell.name));
 	write(1, "$ ", 2);
 }
 
-void	handle_sig(int signal)
+void		handle_sig(int signal)
 {
 	char	deltwo[6];
 
@@ -145,38 +157,44 @@ void	handle_sig(int signal)
 		write(1, deltwo, 6);
 	if (signal == SIGINT)
 	{
-		g_shellvars.exitstatus = 1;
+		g_shell.exitstatus = 1;
 		write(1, deltwo, 6);
 		write(1, "\n", 1);
 		prompt();
 	}
 }
 
-int		main(int ac, char **av, char **envp)
+void		prep_global(char *const *av, char **envp)
 {
-	char	*line;
-	if (ac > 1)
-		leaks_exit("Running with arguments is not supported.", 1);
-	g_shellvars.envvars = malloc_vars(envp);
-	g_shellvars.exitstatus = 0;
-	g_shellvars.loopstatus = 1;
-	g_shellvars.name = ft_substr(ft_strrchr(av[0], '/'), 1, ft_strlen(av[0]) - 1);
-	malloc_check(g_shellvars.name);
-	g_shellvars.og_stdout = dup(STDOUT_FILENO);
-	g_shellvars.og_stdin = dup(STDIN_FILENO);
-	if (g_shellvars.og_stdout == -1 || g_shellvars.og_stdin == -1)
+	g_shell.env = malloc_vars(envp);
+	g_shell.exitstatus = 0;
+	g_shell.loopstatus = 1;
+	g_shell.name = ft_substr(ft_strrchr(av[0], '/'), 1, ft_strlen(av[0]) - 1);
+	malloc_check(g_shell.name);
+	g_shell.og_stdout = dup(STDOUT_FILENO);
+	g_shell.og_stdin = dup(STDIN_FILENO);
+	if (g_shell.og_stdout == -1 || g_shell.og_stdin == -1)
 		leaks_exit("error dupping original filestreams", -1);
-	g_shellvars.is_child = false;
+	g_shell.is_child = false;
 	signal(SIGQUIT, handle_sig);
 	signal(SIGINT, handle_sig);
-	while (g_shellvars.loopstatus)
+}
+
+int			main(int ac, char **av, char **envp)
+{
+	char	*line;
+
+	if (ac > 1)
+		leaks_exit("Running with arguments is not supported.", 1);
+	prep_global(av, envp);
+	while (g_shell.loopstatus)
 	{
 		prompt();
-		g_shellvars.loopstatus = get_next_line(0, &line);
+		g_shell.loopstatus = get_next_line(0, &line);
 		malloc_check(line);
 		do_everything(line);
 		free(line);
 	}
-	write (1, "exit\n", 5);
-	exit(g_shellvars.exitstatus);
+	write(1, "exit\n", 5);
+	exit(g_shell.exitstatus);
 }
