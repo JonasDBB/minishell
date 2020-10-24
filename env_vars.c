@@ -33,7 +33,7 @@ char		**malloc_vars(char **envp)
 	return (result);
 }
 
-static int	find_loc(char const *string, char c)
+int			find_loc(char const *string, char c)
 {
 	int	i;
 
@@ -45,6 +45,15 @@ static int	find_loc(char const *string, char c)
 	return (i + 1);
 }
 
+void		split_string(int i, int loc, char **before, char **after)
+{
+	(*before) = ft_substr(g_shell.envvars[i], 0, loc - 1);
+	malloc_check((*before));
+	(*after) = ft_substr(g_shell.envvars[i], loc,
+						ft_strlen(g_shell.envvars[i]) - loc);
+	malloc_check((*after));
+}
+
 char		*find_env(char *identifier)
 {
 	int		i;
@@ -53,13 +62,12 @@ char		*find_env(char *identifier)
 	int		loc;
 
 	i = 0;
-	while (g_shell.env[i])
+	while (g_shell.envvars[i])
 	{
-		loc = find_loc(g_shell.env[i], '=');
-		before = ft_substr(g_shell.env[i], 0, loc - 1);
-		malloc_check(before);
-		after = ft_substr(g_shell.env[i], loc, ft_strlen(g_shell.env[i]) - loc);
-		malloc_check(after);
+		loc = find_loc(g_shell.envvars[i], '=');
+		if (loc == -1)
+			break ;
+		split_string(i, loc, &before, &after);
 		if (!ft_strcmp(identifier, before))
 		{
 			free(before);
@@ -80,8 +88,14 @@ static char	*get_old_str(char *str, int loc)
 	int		i;
 
 	i = 0;
-	while (str[loc + i] != ' ' && str[loc + i] != '\t' && str[loc + i])
-		i++;
+	if (str[loc] == '_' || ft_isalpha(str[loc]))
+	{
+		while ((ft_isalnum(str[loc + i]) || str[loc + i] == '_') &&
+				str[loc + i])
+		{
+			i++;
+		}
+	}
 	if (!i)
 		res = ft_strdup("");
 	else

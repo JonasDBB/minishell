@@ -21,6 +21,8 @@ bool		env_check(char *arg)
 	good = true;
 	if (!ft_isalpha(arg[0]) && arg[0] != '_')
 		good = false;
+	if (!arg[0])
+		return (false);
 	while (arg[i] != '=' && arg[i] && good)
 	{
 		if (!ft_isalnum(arg[i]) && arg[i] != '_')
@@ -47,6 +49,8 @@ bool		env_check_unset(char *arg)
 	good = true;
 	if (!ft_isalpha(arg[0]) && arg[0] != '_')
 		good = false;
+	if (!arg[0])
+		return (false);
 	while (arg[i] && good)
 	{
 		if (!ft_isalnum(arg[i]) && arg[i] != '_')
@@ -64,16 +68,34 @@ bool		env_check_unset(char *arg)
 	return (good);
 }
 
+void		print_one_env(char *var, int i)
+{
+	int		loc;
+	char	*tmp;
+
+	loc = find_loc(var, '=');
+	if (loc == -1)
+		write(1, g_shell.envvars[i], ft_strlen(g_shell.envvars[i]));
+	else
+		write(1, g_shell.envvars[i], loc);
+	write(1, "\"", 1);
+	if (loc == -1)
+		return ;
+	tmp = var;
+	tmp += loc;
+	write(1, tmp, ft_strlen(tmp));
+}
+
 void		print_env_args(void)
 {
 	int	i;
 
 	i = 0;
-	while (g_shell.env[i])
+	while (g_shell.envvars[i])
 	{
 		write(1, "declare -x ", 11);
-		write(1, g_shell.env[i], ft_strlen(g_shell.env[i]));
-		write(1, "\n", 1);
+		print_one_env(g_shell.envvars[i], i);
+		write(1, "\"\n", 2);
 		i++;
 	}
 }
@@ -103,9 +125,9 @@ int			find_env_loc(char *arg)
 	int	i;
 
 	i = 0;
-	while (g_shell.env[i])
+	while (g_shell.envvars[i])
 	{
-		if (strcmp_until_equals(arg, g_shell.env[i]))
+		if (strcmp_until_equals(arg, g_shell.envvars[i]))
 			return (i);
 		i++;
 	}

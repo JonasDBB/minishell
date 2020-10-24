@@ -32,7 +32,7 @@ static bool	exec(char **args, char *exec_path)
 		leaks_exit("error forking", 1);
 	else if (pid == 0)
 	{
-		if (execve(exec_path, args, g_shell.env) == -1)
+		if (execve(exec_path, args, g_shell.envvars) == -1)
 		{
 			g_shell.exitstatus = 127;
 			return (false);

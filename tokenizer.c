@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <gmpxx.h>
 #include "minishell.h"
 
 static t_token	*new_token(char *content, char end, char space_after)

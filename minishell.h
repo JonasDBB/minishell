@@ -21,7 +21,7 @@
 # include <sys/stat.h>
 # include <errno.h>
 typedef struct	s_shellvars {
-	char			**env;
+	char			**envvars;
 	int 			loopstatus;
 	unsigned char 	exitstatus;
 	char	 		*name;
@@ -116,7 +116,7 @@ void	builtin_unset(char **args);
 */
 t_list	*commandtokens(t_list *tokenlist);
 void	find_command(t_command *current);
-
+# include <stdio.h>
 /*
 ** env_aux_functions.c
 */
@@ -128,6 +128,7 @@ int		find_env_loc(char *arg);
 /*
 ** env_vars.c
 */
+int		find_loc(char const *string, char c);
 char	**malloc_vars(char **envp);
 void	expand_env_var(t_list *tokenlist);
 char	*find_env(char *identifier);

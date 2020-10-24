@@ -17,6 +17,10 @@ static int	strisdigit(char *str)
 	int	i;
 
 	i = 0;
+	while (ft_isspace(str[i]))
+		i++;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
 	while (str[i])
 	{
 		if (!ft_isdigit(str[i]))
@@ -60,22 +64,22 @@ void		add_one_env_var(char *arg)
 	char	**new;
 
 	count = 0;
-	while (g_shell.env[count])
+	while (g_shell.envvars[count])
 		count++;
 	new = malloc(sizeof(char *) * (count + 2));
 	malloc_check(new);
 	new[count + 1] = NULL;
 	count = 0;
-	while (g_shell.env[count])
+	while (g_shell.envvars[count])
 	{
-		new[count] = ft_strdup(g_shell.env[count]);
+		new[count] = ft_strdup(g_shell.envvars[count]);
 		malloc_check(new[count]);
 		count++;
 	}
 	new[count] = ft_strdup(arg);
 	malloc_check(new[count]);
-	free_array(g_shell.env);
-	g_shell.env = new;
+	free_array(g_shell.envvars);
+	g_shell.envvars = new;
 }
 
 void		builtin_export(char **args)
@@ -105,25 +109,25 @@ void		remove_one_env_var(int index_to_remove)
 	char	**new;
 
 	count = 0;
-	while (g_shell.env[count])
+	while (g_shell.envvars[count])
 		count++;
 	new = malloc(sizeof(char *) * (count));
 	malloc_check(new);
 	new[count - 1] = NULL;
 	i = 0;
 	count = 0;
-	while (g_shell.env[count])
+	while (g_shell.envvars[count])
 	{
 		if (count != index_to_remove)
 		{
-			new[i] = ft_strdup(g_shell.env[count]);
+			new[i] = ft_strdup(g_shell.envvars[count]);
 			malloc_check(new[i]);
 			i++;
 		}
 		count++;
 	}
-	free_array(g_shell.env);
-	g_shell.env = new;
+	free_array(g_shell.envvars);
+	g_shell.envvars = new;
 }
 
 void		builtin_unset(char **args)

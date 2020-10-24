@@ -96,8 +96,9 @@ void		builtin_cd(char **args)
 		return ;
 	if (ret == -1)
 	{
-		write(1, "cd: no such file or directory: ", 31);
+		write(1, "cd: ", 4);
 		write(1, args[1], ft_strlen(args[1]));
+		write(1, " no such file or directory", 26);
 		write(1, "\n", 1);
 		g_shell.exitstatus = 1;
 		return ;
@@ -112,17 +113,17 @@ void		builtin_env(char *arg)
 	i = 0;
 	if (arg)
 	{
-		write(1, "env: ", 5);
+		write(1, "envvars: ", 5);
 		write(1, arg, ft_strlen(arg));
 		write(1, ": No such file or directory\n", 28);
 		g_shell.exitstatus = 127;
 		return ;
 	}
-	while (g_shell.env[i])
+	while (g_shell.envvars[i])
 	{
-		if (ft_strchr(g_shell.env[i], '='))
+		if (ft_strchr(g_shell.envvars[i], '='))
 		{
-			write(1, g_shell.env[i], ft_strlen(g_shell.env[i]));
+			write(1, g_shell.envvars[i], ft_strlen(g_shell.envvars[i]));
 			write(1, "\n", 1);
 		}
 		i++;

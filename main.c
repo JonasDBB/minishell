@@ -27,8 +27,9 @@ void		concat_list(t_list *tokenlist)
 		{
 			next_elem = current->next;
 			next_token = (t_token*)next_elem->content;
-			if (ft_strchr(";|<>", current_token->str[0])
-				|| ft_strchr(";|<>", next_token->str[0]))
+			if (next_token->end == ' ' &&
+				(ft_strchr(";|<>", current_token->str[0])
+				|| ft_strchr(";|<>", next_token->str[0])))
 			{
 				current = current->next;
 				continue ;
@@ -54,28 +55,27 @@ static void	set_redirects(char *str)
 }
 
 /*
-**	void	print_token_list(t_list *tokenlist)
+**void	print_token_list(t_list *tokenlist)
+**{
+**	t_list	*tmp;
+**	int i = 0;
+**	tmp = tokenlist;
+**	printf("         -|"); // to allign output
+**	while (tmp)
 **	{
-**		t_list	*tmp;
-**		int i = 0;
-**
-**		tmp = tokenlist;
-**		printf("         -|"); // to allign output
-**		while (tmp)
-**		{
-**			unsetescape(((t_token*)tmp->content)->str);
-**	//		unset_redirects(((t_token*)tmp->content)->str);
-**			printf("\033[0;36m");
-**			if (i % 2)
-**				printf("\033[0;31m");
-**			printf("%s", ((t_token*)tmp->content)->str);
-**			if (((t_token*)tmp->content)->space_after == true)
-**				printf(" ");
-**			tmp = tmp->next;
-**			i++;
-**		}
-**		printf("\033[0m|-\n");
+**		unsetescape(((t_token*)tmp->content)->str);
+** //		unset_redirects(((t_token*)tmp->content)->str);
+**		printf("\033[0;36m");
+**		if (i % 2)
+**			printf("\033[0;31m");
+**		printf("%s", ((t_token*)tmp->content)->str);
+**		if (((t_token*)tmp->content)->space_after == true)
+**			printf(" ");
+**		tmp = tmp->next;
+**		i++;
 **	}
+**	printf("\033[0m|-\n");
+**}
 */
 
 void		remove_escapes(t_list *tokenlist)
@@ -122,8 +122,6 @@ void		do_everything(char *line)
 	tokenlist = tokenizer(line);
 	if (!tokenlist)
 		return ;
-	expand_env_var(tokenlist);
-	concat_list(tokenlist);
 	create_append(tokenlist);
 	if (!syntax_check(tokenlist))
 	{
@@ -131,6 +129,8 @@ void		do_everything(char *line)
 		return ;
 	}
 	set_redirs(tokenlist);
+	expand_env_var(tokenlist);
+	concat_list(tokenlist);
 	remove_escapes(tokenlist);
 	commands = commandtokens(tokenlist);
 	do_commands(commands);
@@ -139,8 +139,8 @@ void		do_everything(char *line)
 
 void		prompt(void)
 {
-	write(1, g_shell.name, ft_strlen(g_shell.name));
-	write(1, "$ ", 2);
+	write(2, g_shell.name, ft_strlen(g_shell.name));
+	write(2, "$ ", 2);
 }
 
 void		handle_sig(int signal)
@@ -166,7 +166,7 @@ void		handle_sig(int signal)
 
 void		prep_global(char *const *av, char **envp)
 {
-	g_shell.env = malloc_vars(envp);
+	g_shell.envvars = malloc_vars(envp);
 	g_shell.exitstatus = 0;
 	g_shell.loopstatus = 1;
 	g_shell.name = ft_substr(ft_strrchr(av[0], '/'), 1, ft_strlen(av[0]) - 1);
@@ -195,6 +195,6 @@ int			main(int ac, char **av, char **envp)
 		do_everything(line);
 		free(line);
 	}
-	write(1, "exit\n", 5);
+	write(2, "exit\n", 5);
 	exit(g_shell.exitstatus);
 }

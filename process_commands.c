@@ -56,7 +56,7 @@ void		find_command(t_command *current)
 		builtin_export(current->tokens);
 	else if (!ft_strcmp(current->tokens[0], "unset"))
 		builtin_unset(current->tokens);
-	else if (!low_case_strcmp(current->tokens[0], "env"))
+	else if (!low_case_strcmp(current->tokens[0], "envvars"))
 		builtin_env(current->tokens[1]);
 	else if (!ft_strcmp(current->tokens[0], "exit"))
 		builtin_exit(current->tokens);
@@ -151,7 +151,7 @@ void		do_commands(t_list *commandlist)
 	signal(SIGQUIT, ignoresig);
 	tmp = commandlist;
 	pipe_pids.pids = NULL;
-	while (tmp)
+	while (tmp && g_shell.loopstatus)
 	{
 		do_one_command(tmp, &pipe_pids);
 		tmp = tmp->next;
