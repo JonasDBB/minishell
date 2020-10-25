@@ -75,15 +75,13 @@ void		print_one_env(char *var, int i)
 
 	loc = find_loc(var, '=');
 	if (loc == -1)
+	{
 		write(1, g_shell.envvars[i], ft_strlen(g_shell.envvars[i]));
+		return ;
+	}
 	else
 		write(1, g_shell.envvars[i], loc);
 	write(1, "\"", 1);
-	if (loc == -1)
-	{
-		write(1, "\"", 1);
-		return ;
-	}
 	tmp = var;
 	tmp += loc;
 	write(1, tmp, ft_strlen(tmp));
