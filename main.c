@@ -12,6 +12,17 @@
 
 #include "minishell.h"
 
+bool		is_redir(char c)
+{
+	if (c == redirect_input)
+		return (true);
+	if (c == redirect_append)
+		return (true);
+	if (c == redirect_trunc)
+		return (true);
+	return (false);
+}
+
 void		concat_list(t_list *tokenlist)
 {
 	t_list	*current;
@@ -19,7 +30,7 @@ void		concat_list(t_list *tokenlist)
 	t_token	*current_token;
 	t_token	*next_token;
 
-	current = tokenlist;
+	current = tokenlist->next;
 	while (current)
 	{
 		current_token = (t_token*)current->content;
@@ -27,9 +38,9 @@ void		concat_list(t_list *tokenlist)
 		{
 			next_elem = current->next;
 			next_token = (t_token*)next_elem->content;
-			if (next_token->end == ' ' &&
+			if (is_redir(current_token->str[0]) || (next_token->end == ' ' &&
 				(ft_strchr(";|<>", current_token->str[0])
-				|| ft_strchr(";|<>", next_token->str[0])))
+				|| ft_strchr(";|<>", next_token->str[0]))))
 			{
 				current = current->next;
 				continue ;
@@ -68,7 +79,7 @@ static void	set_redirects(char *str)
 **		printf("\033[0;36m");
 **		if (i % 2)
 **			printf("\033[0;31m");
-**		printf("%s", ((t_token*)tmp->content)->str);
+**		printf("=%s=", ((t_token*)tmp->content)->str);
 **		if (((t_token*)tmp->content)->space_after == true)
 **			printf(" ");
 **		tmp = tmp->next;
@@ -78,12 +89,70 @@ static void	set_redirects(char *str)
 **}
 */
 
+void		set_redirs(t_list *tokenlist)
+{
+	t_list	*tmp;
+	t_token	*current;
+
+	tmp = tokenlist->next;
+	while (tmp)
+	{
+		current = (t_token*)tmp->content;
+		if (current->end == ' ')
+			set_redirects(current->str);
+		tmp = tmp->next;
+	}
+}
+
+void		addfakkingbefore(t_list *current, void *content)
+{
+	t_list	*new;
+
+	new = ft_lstnew(content);
+	malloc_check(new);
+	if (!current->previous)
+	{
+		new->next = current;
+		current->previous = new;
+	}
+	else
+	{
+		current->previous->next = new;
+		new->previous = current->previous;
+		new->next = current;
+		current->previous = new;
+	}
+}
+
+void		lol(void)
+{
+}
+
+void		fakkingremovecurrent(t_list *current, void (*del)(void*))
+{
+	if (!current->next && !current->previous)
+		lol();
+	else if (!current->previous)
+		current->next->previous = NULL;
+	else if (!current->next)
+		current->previous->next = NULL;
+	else
+	{
+		current->previous->next = current->next;
+		current->next->previous = current->previous;
+	}
+	del(current->content);
+	free(current);
+}
+
 void		remove_escapes(t_list *tokenlist)
 {
 	t_list	*tmp;
+	t_list	*tmp2;
+	t_token	*current;
 	char	old[2];
 
-	tmp = tokenlist;
+	tmp = tokenlist->next;
 	old[0] = escape;
 	old[1] = 0;
 	while (tmp)
@@ -93,21 +162,63 @@ void		remove_escapes(t_list *tokenlist)
 		((t_token*)tmp->content)->str =
 				ft_replace(((t_token*)tmp->content)->str, old, "");
 		malloc_check(((t_token*)tmp->content)->str);
-		tmp = tmp->next;
+		tmp2 = tmp->next;
+		current = (t_token*)tmp->content;
+		if (!ft_strcmp("", current->str) && current->end == ' ')
+			fakkingremovecurrent(tmp, free_one_token);
+		tmp = tmp2;
 	}
 }
 
-void		set_redirs(t_list *tokenlist)
+bool		need_split(char *arg)
+{
+	int	i;
+
+	i = 0;
+	while (arg[i])
+	{
+		if (ft_isspace(arg[i]))
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
+t_list		*split_current(t_list *tmp, const t_token *current)
+{
+	int		i;
+	t_list	*tmp2;
+	t_token	*new;
+	char	**buff;
+
+	buff = ft_split(current->str, ' ');
+	i = 0;
+	while (buff[i])
+	{
+		new = new_token(buff[i], ' ', ' ');
+		malloc_check(new);
+		addfakkingbefore(tmp, new);
+		i++;
+	}
+	tmp2 = tmp->previous;
+	fakkingremovecurrent(tmp, free_one_token);
+	tmp = tmp2;
+	return (tmp);
+}
+
+void		fakkkkkkkkk(t_list *tokenlist)
 {
 	t_list	*tmp;
 	t_token	*current;
 
-	tmp = tokenlist;
+	tmp = tokenlist->next;
 	while (tmp)
 	{
 		current = (t_token*)tmp->content;
-		if (current->end == ' ')
-			set_redirects(current->str);
+		if (current->end == ' ' && need_split(current->str))
+		{
+			tmp = split_current(tmp, current);
+		}
 		tmp = tmp->next;
 	}
 }
@@ -120,6 +231,7 @@ void		do_everything(char *line)
 	if (!ft_strlen(line))
 		return ;
 	tokenlist = tokenizer(line);
+	ft_lstadd_front(&tokenlist, ft_lstnew(new_token("start", '\'', 'a')));
 	if (!tokenlist)
 		return ;
 	create_append(tokenlist);
@@ -130,6 +242,7 @@ void		do_everything(char *line)
 	}
 	set_redirs(tokenlist);
 	expand_env_var(tokenlist);
+	fakkkkkkkkk(tokenlist);
 	concat_list(tokenlist);
 	remove_escapes(tokenlist);
 	commands = commandtokens(tokenlist);

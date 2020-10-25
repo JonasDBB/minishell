@@ -81,7 +81,7 @@ t_list		*commandtokens(t_list *tokenlist)
 	t_list		*new;
 	t_list		*commandlist;
 
-	tmp = tokenlist;
+	tmp = tokenlist->next;
 	commandlist = NULL;
 	while (tmp)
 	{

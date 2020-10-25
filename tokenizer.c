@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static t_token	*new_token(char *content, char end, char space_after)
+t_token			*new_token(char *content, char end, char space_after)
 {
 	t_token *ret;
 
@@ -93,6 +93,7 @@ void			split_at_start(t_list *tmp, t_token *current)
 	malloc_check(current->str);
 	current->space_after = false;
 	new->next = tmp->next;
+	new->previous = tmp;
 	tmp->next = new;
 }
 
@@ -121,6 +122,7 @@ void			split_middle(t_list *tmp, t_token *cur, const char *buff, int i)
 	free(new_buff);
 	cur->space_after = false;
 	new->next = tmp->next;
+	new->previous = tmp;
 	tmp->next = new;
 }
 

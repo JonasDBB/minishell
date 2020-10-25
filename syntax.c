@@ -52,7 +52,7 @@ bool		syntax_check(t_list *tokenlist)
 	current = (t_token*)tmp->content;
 	if (is_splitting(current) && current->str[0] != ';')
 		return (syntax_error("newline"));
-	tmp = tokenlist;
+	tmp = tokenlist->next;
 	current = (t_token*)tmp->content;
 	if (is_splitting(current) && (current->str[0] == ';'
 			|| (current->str[0] == '|')))

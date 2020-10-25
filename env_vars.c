@@ -170,7 +170,7 @@ void		expand_env_var(t_list *tokenlist)
 	t_token	*cur;
 	int		start;
 
-	tmp = tokenlist;
+	tmp = tokenlist->next;
 	while (tmp)
 	{
 		cur = prep_token(tmp, cur);

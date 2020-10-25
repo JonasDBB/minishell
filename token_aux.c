@@ -38,7 +38,7 @@ void	create_append(t_list *tokenlist)
 	char	first;
 	char	second;
 
-	tmp = tokenlist;
+	tmp = tokenlist->next;
 	while (tmp && tmp->next)
 	{
 		first = ((t_token*)tmp->content)->str[0];

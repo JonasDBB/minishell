@@ -39,7 +39,7 @@ all: $(NAME)
 	gcc -c $< -o $@
 
 $(NAME): $(LIBFT) $(OBJS)
-	gcc -o $(NAME) $(OBJS) $(LIBFT)
+	gcc $(FLAGS) -o $(NAME) $(OBJS) $(LIBFT)
 
 clean:
 	rm -f $(OBJS)

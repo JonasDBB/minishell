@@ -20,7 +20,7 @@ void		set_exit_from_child(int status)
 		g_shell.exitstatus = WTERMSIG(status) + 128;
 }
 
-static bool	exec(char **args, char *exec_path)
+void		exec(char **args, char *exec_path)
 {
 	pid_t	pid;
 	int		status;
@@ -34,8 +34,12 @@ static bool	exec(char **args, char *exec_path)
 	{
 		if (execve(exec_path, args, g_shell.envvars) == -1)
 		{
-			g_shell.exitstatus = 127;
-			return (false);
+			write(1, g_shell.name, ft_strlen(g_shell.name));
+			write(1, ": ", 2);
+			write(1, args[0], ft_strlen(args[0]));
+			write(1, ": ", 2);
+			perror("");
+			exit(126);
 		}
 	}
 	else
@@ -43,7 +47,6 @@ static bool	exec(char **args, char *exec_path)
 		waitpid(pid, &status, WUNTRACED);
 		set_exit_from_child(status);
 	}
-	return (true);
 }
 
 static bool	find_exec(char **args, char **path, char *executable)
@@ -97,16 +100,19 @@ bool		find_executables(char **args)
 
 	if (ft_strchr(args[0], '/'))
 	{
+		printf("arg is =%s=\n", args[0]);
 		if (stat(args[0], &buff))
 		{
+			printf("errno is %i\n", errno);
+			perror("");
 			write(1, g_shell.name, ft_strlen(g_shell.name));
 			write(1, ": ", 2);
 			write(1, args[0], ft_strlen(args[0]));
 			write(1, ": No such file or directory\n", 28);
 			g_shell.exitstatus = 127;
 		}
-		else if (!exec(args, args[0]))
-			write(1, "error executing\n", 16);
+		else
+			exec(args, args[0]);
 		return (true);
 	}
 	return (find_path_execs(args));

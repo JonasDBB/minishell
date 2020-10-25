@@ -63,9 +63,7 @@ typedef struct	s_pipe_pids {
 
 void		set_exit_from_child(int status);
 
-
-
-
+t_token		*new_token(char *content, char end, char space_after);
 
 
 
