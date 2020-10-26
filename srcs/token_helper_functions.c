@@ -42,6 +42,7 @@ static t_list	*split_current(t_list *tmp, const t_token *current)
 	char	**buff;
 
 	buff = ft_split(current->str, ' ');
+	malloc_check(buff);
 	i = 0;
 	while (buff[i])
 	{
@@ -51,6 +52,7 @@ static t_list	*split_current(t_list *tmp, const t_token *current)
 		i++;
 	}
 	tmp2 = tmp->previous;
+	free_array(buff);
 	lst_remove_current(tmp, free_one_token);
 	tmp = tmp2;
 	return (tmp);
