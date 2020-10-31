@@ -25,14 +25,14 @@ static void	unsetescape_if_literal(char *s)
 	}
 }
 
-void		remove_escapes(t_list *tokenlist)
+void		remove_escapes(t_list **tokenlist)
 {
 	t_list	*tmp;
 	t_list	*tmp2;
 	t_token	*current;
 	char	old[2];
 
-	tmp = tokenlist->next;
+	tmp = *tokenlist;
 	old[0] = escape;
 	old[1] = 0;
 	while (tmp)
@@ -45,7 +45,11 @@ void		remove_escapes(t_list *tokenlist)
 		tmp2 = tmp->next;
 		current = (t_token*)tmp->content;
 		if (!ft_strcmp("", current->str) && current->end == ' ')
+		{
+			if (!tmp->previous->previous)
+				*tokenlist = tmp->next;
 			lst_remove_current(tmp, free_one_token);
+		}
 		tmp = tmp2;
 	}
 }

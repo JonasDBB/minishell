@@ -48,7 +48,7 @@ void			exec(char **args, char *exec_path)
 		set_exit_from_child(status);
 	}
 }
-
+#include <stdio.h>
 static bool		find_exec(char **args, char **path, char *executable)
 {
 	int			i;
@@ -60,8 +60,9 @@ static bool		find_exec(char **args, char **path, char *executable)
 	{
 		exec_path = ft_strjoin(path[i], executable);
 		malloc_check(exec_path);
-		if (!stat(exec_path, &buff))
+		if (!stat(exec_path, &buff) && !ft_strcmp("", exec_path))
 		{
+			dprintf(2, "true\n");
 			exec(args, exec_path);
 			free(exec_path);
 			free_array(path);
@@ -77,12 +78,12 @@ static bool		find_exec(char **args, char **path, char *executable)
 static bool		find_path_execs(char **args)
 {
 	char		**path;
-	char		*paths;
+	char		*full_path_var;
 	char		*executable;
 
-	paths = find_env("PATH");
-	path = ft_split(paths, ':');
-	free(paths);
+	full_path_var = find_env("PATH");
+	path = ft_split(full_path_var, ':');
+	free(full_path_var);
 	malloc_check(path);
 	executable = ft_strjoin("/", args[0]);
 	malloc_check(executable);

@@ -72,14 +72,25 @@ static t_token	*prep_token(const t_list *tmp, t_token *current)
 	return (current);
 }
 
+static bool			is_end_of_command(t_token *token)
+{
+	if (token->end != ' ')
+		return (false);
+	if (!ft_strchr(";", token->str[0]))
+		return (false);
+	if (!token->str[0])
+		return (false);
+	return (true);
+}
+
 void			expand_env_var(t_list *tokenlist)
 {
 	t_list	*tmp;
 	t_token	*cur;
 	int		start;
 
-	tmp = tokenlist->next;
-	while (tmp)
+	tmp = tokenlist;
+	while (tmp && !is_end_of_command((t_token*)tmp->content))
 	{
 		cur = prep_token(tmp, cur);
 		if (!cur->literal && ft_strchr(cur->str, '$'))

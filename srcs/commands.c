@@ -108,7 +108,7 @@ void		printcommandlist(t_list *commandlist)
 }
 
 
-t_list				*commandtokens(t_list *tokenlist)
+void			commandtokens(t_list *tokenlist)
 {
 	t_list		*tmp;
 	t_list		*new;
@@ -118,17 +118,61 @@ t_list				*commandtokens(t_list *tokenlist)
 	commandlist = NULL;
 	while (tmp)
 	{
+		print_token_list(tmp);
+		expand_env_var(tmp);
+//
+
+//		print_token_list(tmp);
+		retokenize_expanded_vars(tmp);
+//		print_token_list(tmp);
+		concat_list(tmp);
+		print_token_list(tmp);
+		remove_escapes(&tmp);
+//		print_token_list(tmp);
+		if (!tmp)
+			break;
 		new = ft_lstnew(new_command(tmp));
 		malloc_check(new);
 		ft_lstadd_back(&commandlist, new);
+		if (((t_command*)new->content)->type != '|')
+		{
+			do_command_list(commandlist);
+			ft_lstclear(&commandlist, free_one_command);
+			commandlist = NULL;
+		}
+
+//		dprintf(2, "between command parsing\n");
 		while (!is_command_splitting((t_token*)tmp->content) && tmp->next)
 			tmp = tmp->next;
 		tmp = tmp->next;
 	}
 //	printcommandlist(commandlist);
 	ft_lstclear(&tokenlist, free_one_token);
-	return (commandlist);
 }
+
+
+//expand_env_var(tmp);
+////		print_token_list(tmp);
+//
+//retokenize_expanded_vars(tmp);
+////		print_token_list(tmp);
+//concat_list(tmp);
+//remove_escapes(tmp);
+//new = ft_lstnew(new_command(tmp));
+//malloc_check(new);
+//ft_lstadd_back(&commandlist, new);
+//if (((t_command*)new->content)->type != '|')
+//{
+//do_command_list(new);
+//ft_lstclear(&commandlist, free_one_command);
+//commandlist = NULL;
+//}
+////		free_one_command(new->content);
+////		free(new);
+////		dprintf(2, "between command parsing\n");
+//while (!is_command_splitting((t_token*)tmp->content) && tmp->next)
+//tmp = tmp->next;
+//tmp = tmp->next;
 /*
 **#include <stdio.h>
 **void		printcommandlist(t_list *commandlist)

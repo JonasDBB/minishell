@@ -66,6 +66,15 @@ t_shellvars	g_shell;
 
 
 
+void	print_token_list(t_list *tokenlist);
+
+//bool			is_end_of_command(t_token *token);
+
+
+
+
+
+
 /*
 ** builtin_exit.c
 */
@@ -81,7 +90,7 @@ void			builtin_cd(char **args);
 /*
 ** commands.c
 */
-t_list			*commandtokens(t_list *tokenlist);
+void			commandtokens(t_list *tokenlist);
 
 /*
 ** env_export_unset_builtins.c
@@ -109,7 +118,7 @@ void			leaks_exit(char *error, int exitcode);
 /*
 ** escape_chars.c
 */
-void			remove_escapes(t_list *tokenlist);
+void			remove_escapes(t_list **tokenlist);
 void			setescape(char *s);
 void			unsetescape(char *s);
 

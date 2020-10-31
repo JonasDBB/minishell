@@ -61,7 +61,7 @@ void	print_token_list(t_list *tokenlist)
 static void	do_everything(char *line)
 {
 	t_list	*tokenlist;
-	t_list	*commands;
+//	t_list	*commands;
 
 	if (!ft_strlen(line))
 		return ;
@@ -78,13 +78,13 @@ static void	do_everything(char *line)
 	}
 	set_redirs(tokenlist);
 //	expand_env_var(tokenlist);
-	retokenize_expanded_vars(tokenlist);
-	concat_list(tokenlist);
-	remove_escapes(tokenlist);
-	print_token_list(tokenlist);
-	commands = commandtokens(tokenlist);
-	do_command_list(commands);
-	ft_lstclear(&commands, free_one_command);
+//	retokenize_expanded_vars(tokenlist);
+//	concat_list(tokenlist);
+//	remove_escapes(tokenlist);
+//	print_token_list(tokenlist);
+	commandtokens(tokenlist);
+//	do_command_list(commands);
+//	ft_lstclear(&commands, free_one_command);
 }
 
 static void	prompt(void)

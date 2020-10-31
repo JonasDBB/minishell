@@ -60,7 +60,7 @@ void		concat_list(t_list *tokenlist)
 	t_token	*current_token;
 	t_token	*next_token;
 
-	current = tokenlist->next;
+	current = tokenlist;
 	while (current)
 	{
 		current_token = (t_token*)current->content;
