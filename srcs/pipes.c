@@ -27,7 +27,10 @@ static void	do_parent(t_command *curr, t_command *prev, pid_t *pids, pid_t pid)
 
 	close(curr->pipe_fds[1]);
 	if (curr->type != '|')
+	{
 		waitpid(pid, &status, WUNTRACED);
+		set_exit_from_child(status);
+	}
 	else
 	{
 		i = 0;
@@ -39,8 +42,6 @@ static void	do_parent(t_command *curr, t_command *prev, pid_t *pids, pid_t pid)
 		close(curr->pipe_fds[0]);
 	if (prev && prev->type == '|')
 		close(prev->pipe_fds[0]);
-	else
-		set_exit_from_child(status);
 }
 
 static void	child(t_command *current, t_command *previous)

@@ -45,3 +45,12 @@ int			find_env_loc(char *arg)
 	}
 	return (-1);
 }
+
+void		remove_if_exists(char *envvar)
+{
+	int	loc;
+
+	loc = find_env_loc(envvar);
+	if (loc != -1)
+		remove_one_env_var(loc);
+}

@@ -35,6 +35,28 @@
 **	printf("\033[0m|-\n");
 **}
 */
+#include <stdio.h>
+void	print_token_list(t_list *tokenlist)
+{
+	t_list	*tmp;
+	int i = 0;
+	tmp = tokenlist;
+	printf("         -|"); // to allign output
+	while (tmp)
+	{
+		unsetescape(((t_token*)tmp->content)->str);
+ //		unset_redirects(((t_token*)tmp->content)->str);
+		printf("\033[0;36m");
+		if (i % 2)
+			printf("\033[0;31m");
+		printf("=%s=", ((t_token*)tmp->content)->str);
+		if (((t_token*)tmp->content)->space_after == true)
+			printf(" ");
+		tmp = tmp->next;
+		i++;
+	}
+	printf("\033[0m|-\n");
+}
 
 static void	do_everything(char *line)
 {
@@ -55,10 +77,11 @@ static void	do_everything(char *line)
 		return ;
 	}
 	set_redirs(tokenlist);
-	expand_env_var(tokenlist);
+//	expand_env_var(tokenlist);
 	retokenize_expanded_vars(tokenlist);
 	concat_list(tokenlist);
 	remove_escapes(tokenlist);
+	print_token_list(tokenlist);
 	commands = commandtokens(tokenlist);
 	do_command_list(commands);
 	ft_lstclear(&commands, free_one_command);

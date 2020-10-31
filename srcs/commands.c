@@ -40,9 +40,10 @@ static t_command	*prep_command_list(t_list *tokenlist)
 		count++;
 		tmp = tmp->next;
 	}
-	if (!tmp->next)
+	if (!tmp->next && !is_command_splitting((t_token*)tmp->content))
 		count++;
 	ret->tokens = malloc(sizeof(char*) * (count + 1));
+	malloc_check(ret->tokens);
 	ret->tokens[count] = NULL;
 	return (ret);
 }
@@ -55,7 +56,6 @@ static t_command	*new_command(t_list *tokenlist)
 
 	ret = prep_command_list(tokenlist);
 	tmp = tokenlist;
-	malloc_check(ret->tokens);
 	i = 0;
 	while (!is_command_splitting((t_token*)tmp->content) && tmp->next)
 	{
@@ -64,7 +64,7 @@ static t_command	*new_command(t_list *tokenlist)
 		i++;
 		tmp = tmp->next;
 	}
-	if (!tmp->next)
+	if (!tmp->next && !is_command_splitting((t_token*)tmp->content))
 	{
 		ret->tokens[i] = ft_strdup(((t_token*)tmp->content)->str);
 		malloc_check(ret->tokens[i]);
@@ -74,6 +74,39 @@ static t_command	*new_command(t_list *tokenlist)
 		ret->type = ((t_token*)tmp->content)->str[0];
 	return (ret);
 }
+
+#include <stdio.h>
+void		printcommandlist(t_list *commandlist)
+{
+	t_list *tmp;
+	int i = 0;
+	int c = 0;
+
+	tmp = commandlist;
+	while (tmp)
+	{
+		printf("\033[0;36m");
+		if (c % 2)
+			printf("\033[0;31m");
+		i = 0;
+		while (((t_command*)tmp->content)->tokens[i])
+		{
+			printf("\033[0;36m");
+			if (i % 2)
+				printf("\033[0;31m");
+			printf("%s ", ((t_command*)tmp->content)->tokens[i]);
+			i++;
+		}
+		if (((t_command*)tmp->content)->type == last)
+			printf("\ntype is last\n");
+		else
+			printf("\ntype is %c\n", ((t_command*)tmp->content)->type);
+		tmp = tmp->next;
+		c++;
+	}
+	printf("\033[0m\n");
+}
+
 
 t_list				*commandtokens(t_list *tokenlist)
 {
@@ -92,6 +125,7 @@ t_list				*commandtokens(t_list *tokenlist)
 			tmp = tmp->next;
 		tmp = tmp->next;
 	}
+//	printcommandlist(commandlist);
 	ft_lstclear(&tokenlist, free_one_token);
 	return (commandlist);
 }
