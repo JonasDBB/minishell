@@ -76,8 +76,8 @@ void		builtin_export(char **args)
 			i++;
 			continue;
 		}
-		remove_if_exists(args[i]);
-		add_one_env_var(args[i]);
+		if (remove_if_exists(args[i]))
+			add_one_env_var(args[i]);
 		i++;
 	}
 }

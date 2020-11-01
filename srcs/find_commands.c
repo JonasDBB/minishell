@@ -56,7 +56,7 @@ void		find_command(t_command *current)
 		builtin_export(current->tokens);
 	else if (!ft_strcmp(current->tokens[0], "unset"))
 		builtin_unset(current->tokens);
-	else if (!low_case_strcmp(current->tokens[0], "envvars"))
+	else if (!low_case_strcmp(current->tokens[0], "env"))
 		builtin_env(current->tokens[1]);
 	else if (!ft_strcmp(current->tokens[0], "exit"))
 		builtin_exit(current->tokens);

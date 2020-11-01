@@ -22,6 +22,7 @@ static	void	exec_error_msg(char *arg)
 	write(2, ": ", 2);
 	errorstr = strerror(errno);
 	write(2, errorstr, ft_strlen(errorstr));
+	write(2, "\n", 1);
 }
 
 void			exec(char **args, char *exec_path)
@@ -48,7 +49,7 @@ void			exec(char **args, char *exec_path)
 		set_exit_from_child(status);
 	}
 }
-#include <stdio.h>
+
 static bool		find_exec(char **args, char **path, char *executable)
 {
 	int			i;
@@ -60,9 +61,8 @@ static bool		find_exec(char **args, char **path, char *executable)
 	{
 		exec_path = ft_strjoin(path[i], executable);
 		malloc_check(exec_path);
-		if (!stat(exec_path, &buff) && !ft_strcmp("", exec_path))
+		if (!stat(exec_path, &buff) && ft_strcmp("", exec_path))
 		{
-			dprintf(2, "true\n");
 			exec(args, exec_path);
 			free(exec_path);
 			free_array(path);

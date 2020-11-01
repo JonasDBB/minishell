@@ -12,14 +12,14 @@
 
 #include "../incl/minishell.h"
 
-static void	unsetescape_if_literal(char *s)
+static void	unsetescape_if_quoted(char *s)
 {
 	int i;
 
 	i = 0;
 	while (s[i])
 	{
-		if (s[i] == escape && s[i + 1] && s[i + 1] != '$' && s[i + 1] != '\\')
+		if (s[i] == escape && s[i + 1] && !ft_strchr("$\"\\", s[i + 1]))
 			s[i] = '\\';
 		i++;
 	}
@@ -38,7 +38,7 @@ void		remove_escapes(t_list **tokenlist)
 	while (tmp)
 	{
 		if (((t_token*)tmp->content)->end == '\"')
-			unsetescape_if_literal(((t_token*)tmp->content)->str);
+			unsetescape_if_quoted(((t_token *) tmp->content)->str);
 		((t_token*)tmp->content)->str =
 				ft_replace(((t_token*)tmp->content)->str, old, "");
 		malloc_check(((t_token*)tmp->content)->str);

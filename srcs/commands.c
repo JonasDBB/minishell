@@ -71,7 +71,9 @@ static t_command	*new_command(t_list *tokenlist)
 		ret->type = last;
 	}
 	else
+	{
 		ret->type = ((t_token*)tmp->content)->str[0];
+	}
 	return (ret);
 }
 
@@ -118,20 +120,28 @@ void			commandtokens(t_list *tokenlist)
 	commandlist = NULL;
 	while (tmp)
 	{
-		print_token_list(tmp);
+//		print_token_list(tmp);
 		expand_env_var(tmp);
-//
 
-//		print_token_list(tmp);
-		retokenize_expanded_vars(tmp);
-//		print_token_list(tmp);
-		concat_list(tmp);
 		print_token_list(tmp);
+		dprintf(2, "tmp token is =%s=\n", ((t_token*)tmp->content)->str);
+		tmp = tmp->previous;
+		dprintf(2, "tmp token is =%s=\n", ((t_token*)tmp->content)->str);
+		retokenize_expanded_vars(tmp->next);
+		dprintf(2, "tmp token is =%s=\n", ((t_token*)tmp->content)->str);
+		tmp = tmp->next;
+		dprintf(2, "tmp token is =%s=\n", ((t_token*)tmp->content)->str);
+		print_token_list(tmp);
+		concat_list(tmp);
+//		print_token_list(tmp);
 		remove_escapes(&tmp);
 //		print_token_list(tmp);
 		if (!tmp)
 			break;
 		new = ft_lstnew(new_command(tmp));
+		dprintf(2, "asdfghjkl\n");
+		print_token_list(tmp);
+
 		malloc_check(new);
 		ft_lstadd_back(&commandlist, new);
 		if (((t_command*)new->content)->type != '|')

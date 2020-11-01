@@ -62,15 +62,7 @@ typedef struct	s_pipe_pids {
 
 t_shellvars	g_shell;
 
-
-
-
-
 void	print_token_list(t_list *tokenlist);
-
-//bool			is_end_of_command(t_token *token);
-
-
 
 
 
@@ -104,7 +96,7 @@ void			builtin_unset(char **args);
 ** env_search_helper.c
 */
 int				find_env_loc(char *arg);
-void			remove_if_exists(char *envvar);
+bool			remove_if_exists(char *envvar);
 
 /*
 ** err_and_exit.c

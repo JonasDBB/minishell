@@ -17,7 +17,7 @@ static int	strcmp_until_equals(char const *arg, char const *str)
 	int	i;
 
 	i = 0;
-	while (arg[i] && str[i] != '=' && str[i])
+	while (arg[i] && arg[i] != '=' && str[i] != '=' && str[i])
 	{
 		if (arg[i] != str[i])
 			return (0);
@@ -27,7 +27,7 @@ static int	strcmp_until_equals(char const *arg, char const *str)
 		return (1);
 	if (!arg[i] && str[i] && str[i] != '=')
 		return (0);
-	if (!str[i] && arg[i])
+	if (!str[i] && arg[i] && arg[i] != '=')
 		return (0);
 	return (1);
 }
@@ -46,11 +46,16 @@ int			find_env_loc(char *arg)
 	return (-1);
 }
 
-void		remove_if_exists(char *envvar)
+bool		remove_if_exists(char *envvar)
 {
 	int	loc;
 
 	loc = find_env_loc(envvar);
+	if (loc != -1 && !ft_strchr(envvar, '='))
+	{
+		return (false);
+	}
 	if (loc != -1)
 		remove_one_env_var(loc);
+	return (true);
 }
