@@ -14,7 +14,7 @@ NAME = minishell
 
 LIBFT = libft/libft.a
 
-FLAGS = -Wall -Wextra -Werror -fsanitize=address
+FLAGS = -Wall -Wextra -Werror
 
 INCLUDES = incl/
 
