@@ -72,7 +72,7 @@ static t_token	*prep_token(const t_list *tmp, t_token *current)
 	return (current);
 }
 
-static bool			is_end_of_command(t_token *token)
+static bool		is_end_of_command(t_token *token)
 {
 	if (token->end != ' ')
 		return (false);

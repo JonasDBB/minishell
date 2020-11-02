@@ -38,7 +38,7 @@ void		remove_escapes(t_list **tokenlist)
 	while (tmp)
 	{
 		if (((t_token*)tmp->content)->end == '\"')
-			unsetescape_if_quoted(((t_token *) tmp->content)->str);
+			unsetescape_if_quoted(((t_token *)tmp->content)->str);
 		((t_token*)tmp->content)->str =
 				ft_replace(((t_token*)tmp->content)->str, old, "");
 		malloc_check(((t_token*)tmp->content)->str);

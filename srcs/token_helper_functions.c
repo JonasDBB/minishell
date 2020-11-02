@@ -77,7 +77,7 @@ void			retokenize_expanded_vars(t_list *tokenlist)
 	t_list	*tmp;
 	t_token	*current;
 
-	tmp = tokenlist; /////////NEEDS TO BE FIXED TO NOT TAKE NEXT
+	tmp = tokenlist;
 	while (tmp)
 	{
 		current = (t_token*)tmp->content;

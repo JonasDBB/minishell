@@ -46,9 +46,9 @@ void		lst_add_before(t_list *current, void *content)
 	}
 	else
 	{
-		current->previous->next = new;
 		new->previous = current->previous;
 		new->next = current;
+		current->previous->next = new;
 		current->previous = new;
 	}
 }

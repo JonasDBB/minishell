@@ -12,6 +12,15 @@
 
 #include "../incl/minishell.h"
 
+static void	reorganize_list(t_list *tmp, t_list *new)
+{
+	new->next = tmp->next;
+	if (tmp->next)
+		tmp->next->previous = new;
+	new->previous = tmp;
+	tmp->next = new;
+}
+
 static void	split_at_start(t_list *tmp, t_token *current)
 {
 	t_list	*new;
@@ -27,9 +36,7 @@ static void	split_at_start(t_list *tmp, t_token *current)
 	current->str = ft_strdup(s);
 	malloc_check(current->str);
 	current->space_after = false;
-	new->next = tmp->next;
-	new->previous = tmp;
-	tmp->next = new;
+	reorganize_list(tmp, new);
 }
 
 static void	split_middle(t_list *tmp, t_token *cur, const char *buff, int i)
@@ -56,9 +63,7 @@ static void	split_middle(t_list *tmp, t_token *cur, const char *buff, int i)
 		((t_token*)new->content)->space_after = false;
 	free(new_buff);
 	cur->space_after = false;
-	new->next = tmp->next;
-	new->previous = tmp;
-	tmp->next = new;
+	reorganize_list(tmp, new);
 }
 
 static void	setup_split(t_list *tmp, t_token *current)
