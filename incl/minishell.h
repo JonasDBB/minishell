@@ -62,11 +62,6 @@ typedef struct	s_pipe_pids {
 
 t_shellvars	g_shell;
 
-void	print_token_list(t_list *tokenlist);
-
-
-
-
 /*
 ** builtin_exit.c
 */
