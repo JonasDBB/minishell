@@ -6,7 +6,7 @@
 /*   By: jbennink <jbennink@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/23 09:54:21 by jbennink      #+#    #+#                 */
-/*   Updated: 2020/06/25 14:43:44 by jbennink      ########   odam.nl         */
+/*   Updated: 2020/11/03 21:45:40 by jonasbb       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <sys/stat.h>
 # include <errno.h>
 # include <string.h>
+# include <sys/wait.h>
 
 enum			e_state
 {
